@@ -30,11 +30,12 @@
 //   return uniqKeys.map(getAstElement);
 // };
 
-const pageLoader = (url, outputPath) => {
+const pageLoader = (url='', outputPath='') => {
   // console.log(url);
   // console.log(outputPath);
   return [url, outputPath];
-  // return 'test';
+  // return 'test11';
+  // console.log('test11');
 
   //   const extName1 = path.extname(pathToFile1).slice(1);
   //   const extName2 = path.extname(pathToFile2).slice(1);
@@ -49,5 +50,7 @@ const pageLoader = (url, outputPath) => {
 
   //   return render(ast, type);
 };
+
+// pageLoader(url, outputPath);
 
 export default pageLoader;

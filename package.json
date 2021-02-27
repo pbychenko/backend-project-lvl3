@@ -42,6 +42,7 @@
     "jest-cli": "^24.9.0"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "commander": "^3.0.2",
     "lodash": "^4.17.15",
     "readline-sync": "^1.4.10"

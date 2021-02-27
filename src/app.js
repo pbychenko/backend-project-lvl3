@@ -1,9 +1,9 @@
-import commander from 'commander';
+// import commander from 'commander';
 import pageLoader from '.';
 
 const runApp = () => {
-  // console.log('here')
-  console.log(pageLoader('test.ru', 'process.cwd()'));
+  const testPath = '/home/pavel/projects/catalog';
+  console.log(pageLoader('https://github.com/axios/axios'));
   // commander.version('0.0.1')
   //   .description('Some description')
   //   .option('-out, --output [path]', 'Download path', 'process.cwd()')

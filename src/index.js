@@ -1,8 +1,10 @@
 // import _ from 'lodash';
 // import path from 'path';
-// import fs from 'fs';
+import fs from 'fs';
 // import parse from './parser';
 // import render from './formatters';
+
+import axios from 'axios';
 
 // const getAst = (beforeContent, afterContent) => {
 //   const uniqKeys = _.union(Object.keys(beforeContent), Object.keys(afterContent));
@@ -29,11 +31,29 @@
 //   };
 //   return uniqKeys.map(getAstElement);
 // };
+const defaultPath = process.cwd();
+const getFileName = (url) => {
+  // const urlObj = new URL(url);
+  // return urlObj.hostname;
+  const newPath = `${url.split('://')[1].replaceAll('/', '-')}.html`;
+  return newPath;
+};
 
-const pageLoader = (url='', outputPath='') => {
+const pageLoader = (url='', outputPath = defaultPath) => {
   // console.log(url);
   // console.log(outputPath);
-  return [url, outputPath];
+  // console.log(process.cwd());
+  const fileName = getFileName(url);
+  axios.get(url)
+    .then(({ data }) => {
+      // console.log(data);
+      fs.writeFile(`${outputPath}/${fileName}`, `${data}`, (_error3) => {
+        console.log('File has been written');
+      });
+    });
+  // return 1;
+  // return [url, outputPath];
+
   // return 'test11';
   // console.log('test11');
 

@@ -1,57 +1,31 @@
 // import fs from 'fs';
-// import genDiff from '../src';
+import nock from 'nock';
+import { promises as fsp } from 'fs';
+import pageLoader from '../src';
+
 
 // const jsonFilepath1 = `${__dirname}/__fixtures__/json/before.json`;
 // const jsonFilepath2 = `${__dirname}/__fixtures__/json/after.json`;
-// const yamlFilepath1 = `${__dirname}/__fixtures__/yaml/before.yaml`;
-// const yamlFilepath2 = `${__dirname}/__fixtures__/yaml/after.yaml`;
-// const iniFilepath1 = `${__dirname}/__fixtures__/ini/before.ini`;
-// const iniFilepath2 = `${__dirname}/__fixtures__/ini/after.ini`;
 
-// describe('Check simple format', () => {
-//   const expPath = `${__dirname}/__fixtures__/results/simpleRenderExpectedResult`;
-//   const expected = fs.readFileSync(`${expPath}`, 'utf8');
-//   test('Check json files', () => {
-//     expect(genDiff(jsonFilepath1, jsonFilepath2, 'simple')).toBe(expected);
-//   });
-
-//   test('Check yaml files', () => {
-//     expect(genDiff(yamlFilepath1, yamlFilepath2, 'simple')).toBe(expected);
-//   });
-
-//   test('Check ini files', () => {
-//     expect(genDiff(iniFilepath1, iniFilepath2, 'simple')).toBe(expected);
-//   });
+// beforeAll(() => {
+//   const scope = nock('https://testUrl.com').get('/tests').reply(200, '<html>some content</html>');
 // });
 
-// describe('Check plain format', () => {
-//   const expPath = `${__dirname}/__fixtures__/results/plainRenderExpectedResult`;
-//   const expected = fs.readFileSync(`${expPath}`, 'utf8');
-//   test('Check json files', () => {
-//     expect(genDiff(jsonFilepath1, jsonFilepath2, 'plain')).toBe(expected);
-//   });
+describe('Check download html to file', () => {
+  // const expPath = `${__dirname}/__fixtures__/results/simpleRenderExpectedResult`;
+  // const expected = fs.readFileSync(`${expPath}`, 'utf8');
 
-//   test('Check yaml files', () => {
-//     expect(genDiff(yamlFilepath1, yamlFilepath2, 'plain')).toBe(expected);
-//   });
+  test('1', async () => {
+    const host = 'https://testurl.com';
+    nock(host).get('/test1').reply(200, '<html>some content</html>');
+    const expPath = `${__dirname}`;
+    // console.log(expPath);
+    await pageLoader('https://testurl.com/test1', expPath);
+    const result = await fsp.readFile(`${expPath}/testurl-com-test1.html`, 'utf8');
+    expect(result).toBe('<html>some content</html>');
+  });
 
-//   test('Check ini files', () => {
-//     expect(genDiff(iniFilepath1, iniFilepath2, 'plain')).toBe(expected);
-//   });
-// });
-
-// describe('Check json format', () => {
-//   const expPath = `${__dirname}/__fixtures__/results/jsonRenderExpectedResult`;
-//   const expected = fs.readFileSync(`${expPath}`, 'utf8');
-//   test('Check json files', () => {
-//     expect(genDiff(jsonFilepath1, jsonFilepath2, 'json')).toBe(expected);
-//   });
-
-//   test('Check yaml files', () => {
-//     expect(genDiff(yamlFilepath1, yamlFilepath2, 'json')).toBe(expected);
-//   });
-
-//   test('Check ini files', () => {
-//     expect(genDiff(iniFilepath1, iniFilepath2, 'json')).toBe(expected);
-//   });
-// });
+  // test('Check yaml files', () => {
+  //   expect(genDiff(yamlFilepath1, yamlFilepath2, 'simple')).toBe(expected);
+  // });
+});

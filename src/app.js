@@ -2,7 +2,7 @@
 import pageLoader from '.';
 
 const runApp = () => {
-  const testPath = '/home/pavel/projects/catalog';
+  // const testPath = '/home/pavel/projects/catalog';
   console.log(pageLoader('https://github.com/axios/axios'));
   // commander.version('0.0.1')
   //   .description('Some description')

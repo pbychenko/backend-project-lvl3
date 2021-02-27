@@ -39,7 +39,7 @@ const getFileName = (url) => {
   return newPath;
 };
 
-const pageLoader = (url='', outputPath = defaultPath) => {
+const pageLoader = (url = '', outputPath = defaultPath) => {
   // console.log(url);
   // console.log(outputPath);
   // console.log(process.cwd());

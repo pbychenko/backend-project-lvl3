@@ -1,15 +1,25 @@
 // import fs from 'fs';
 import nock from 'nock';
 import { promises as fsp } from 'fs';
+import os from 'os';
+import path from 'path';
 import pageLoader from '../src';
-
 
 // const jsonFilepath1 = `${__dirname}/__fixtures__/json/before.json`;
 // const jsonFilepath2 = `${__dirname}/__fixtures__/json/after.json`;
+let resultDirectory;
 
-// beforeAll(() => {
-//   const scope = nock('https://testUrl.com').get('/tests').reply(200, '<html>some content</html>');
-// });
+beforeEach(async () => {
+  // const testPath = __dirname;
+  // console.log(typeof testPath);
+  resultDirectory = path.join(os.tmpdir(), 'page-loader-');
+  // console.log(resultDirectory);
+
+  // await fsp.mkdtemp(path.join('test', 'page-loader-'));
+  resultDirectory = await fsp.mkdtemp(resultDirectory);
+  // console.log(r);
+  // console.log(resultDirectory);
+});
 
 describe('Check download html to file', () => {
   // const expPath = `${__dirname}/__fixtures__/results/simpleRenderExpectedResult`;
@@ -18,10 +28,9 @@ describe('Check download html to file', () => {
   test('1', async () => {
     const host = 'https://testurl.com';
     nock(host).get('/test1').reply(200, '<html>some content</html>');
-    const expPath = `${__dirname}`;
-    // console.log(expPath);
-    await pageLoader('https://testurl.com/test1', expPath);
-    const result = await fsp.readFile(`${expPath}/testurl-com-test1.html`, 'utf8');
+    await pageLoader('https://testurl.com/test1', resultDirectory);
+    // await pageLoader('https://testurl.com/test1');
+    const result = await fsp.readFile(`${resultDirectory}/testurl-com-test1.html`, 'utf8');
     expect(result).toBe('<html>some content</html>');
   });
 

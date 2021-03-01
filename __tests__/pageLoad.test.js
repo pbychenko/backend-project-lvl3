@@ -27,14 +27,15 @@ describe('Check download html to file', () => {
 
   test('1', async () => {
     const host = 'https://testurl.com';
-    nock(host).get('/test1').reply(200, '<html>some content</html>');
+    nock(host).get('/test1').reply(200, '<html><head></head><body>some content</body></html>');
     await pageLoader('https://testurl.com/test1', resultDirectory);
     // await pageLoader('https://testurl.com/test1');
     const result = await fsp.readFile(`${resultDirectory}/testurl-com-test1.html`, 'utf8');
-    expect(result).toBe('<html>some content</html>');
+    expect(result).toBe('<html><head></head><body>some content</body></html>');
+    expect(1).toBe(1);
   });
 
-  // test('Check yaml files', () => {
-  //   expect(genDiff(yamlFilepath1, yamlFilepath2, 'simple')).toBe(expected);
-  // });
+//   // test('Check yaml files', () => {
+//   //   expect(genDiff(yamlFilepath1, yamlFilepath2, 'simple')).toBe(expected);
+//   // });
 });

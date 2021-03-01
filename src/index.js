@@ -110,30 +110,30 @@ const pageLoader = (urlString = '', outputPath = defaultPath) => {
         $(this).attr('src', fullImageDownLoadPath);
       });
 
-      const linkLinks = $('link');
+      // const linkLinks = $('link');
 
-      linkLinks.each(function () {
-        const link = $(this).attr('href');
-        const fullLinkPath = url.resolve(base, link);
-        const fullLinkName = getLinkName(fullLinkPath);
-        const fullLinkDownLoadPath = path.resolve(filesDirectoryPath, fullLinkName);
-        downLoadStylesAndJS(fullLinkPath, fullLinkDownLoadPath);
-        $(this).attr('href', fullLinkDownLoadPath);
-      });
+      // linkLinks.each(function () {
+      //   const link = $(this).attr('href');
+      //   const fullLinkPath = url.resolve(base, link);
+      //   const fullLinkName = getLinkName(fullLinkPath);
+      //   const fullLinkDownLoadPath = path.resolve(filesDirectoryPath, fullLinkName);
+      //   downLoadStylesAndJS(fullLinkPath, fullLinkDownLoadPath);
+      //   $(this).attr('href', fullLinkDownLoadPath);
+      // });
 
-      const scriptLinks = $('script');
+      // const scriptLinks = $('script');
 
-      scriptLinks.each(function () {
-        const link = $(this).attr('src');
-        if (link) {
-          const fullLinkPath = url.resolve(base, link);
-          console.log(fullLinkPath);
-          const fullLinkName = getJSName(fullLinkPath);
-          const fullLinkDownLoadPath = path.resolve(filesDirectoryPath, fullLinkName);
-          downLoadStylesAndJS(fullLinkPath, fullLinkDownLoadPath);
-          $(this).attr('src', fullLinkDownLoadPath);
-        }
-      });
+      // scriptLinks.each(function () {
+      //   const link = $(this).attr('src');
+      //   if (link) {
+      //     const fullLinkPath = url.resolve(base, link);
+      //     console.log(fullLinkPath);
+      //     const fullLinkName = getJSName(fullLinkPath);
+      //     const fullLinkDownLoadPath = path.resolve(filesDirectoryPath, fullLinkName);
+      //     downLoadStylesAndJS(fullLinkPath, fullLinkDownLoadPath);
+      //     $(this).attr('src', fullLinkDownLoadPath);
+      //   }
+      // });
 
       fs.writeFile(`${outputPath}/${fileName}`, `${$.html()}`, (error) => {
         if (error) {

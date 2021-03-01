@@ -46,6 +46,7 @@
     "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.5",
     "commander": "^3.0.2",
+    "debug": "^2.6.9",
     "lodash": "^4.17.15",
     "readline-sync": "^1.4.10"
   }

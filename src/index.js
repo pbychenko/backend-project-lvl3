@@ -19,6 +19,18 @@ const getImageName = (url) => {
   return newPath;
 };
 
+const getLinkName = (url) => {
+  // const newPath = `${url.split('://')[1].replace(/\//g, '-')}.html`;
+  const newPath = `${url.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-')}.css`;
+  return newPath;
+};
+
+const getJSName = (url) => {
+  // const newPath = `${url.split('://')[1].replace(/\//g, '-')}.html`;
+  const newPath = `${url.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-')}.js`;
+  return newPath;
+};
+
 const getFilesDirectoryName = (url) => {
   // const newPath = `${url.split('://')[1].replace(/\//g, '-')}.html`;
   const newPath = `${url.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-')}_files`;
@@ -42,8 +54,28 @@ const downLoadImage = (imagePath, downLoadPath) => {
   // response.data.pipe(writer)
 
   return new Promise((resolve, reject) => {
-    writer.on('finish', resolve)
-    writer.on('error', reject)
+    writer.on('finish', resolve);
+    writer.on('error', reject);
+  });
+};
+
+const downLoadStylesAndJS = (resourcePath, downLoadPath) => {
+  const writer = fs.createWriteStream(downLoadPath);
+
+  axios({
+    method: 'get',
+    url: resourcePath,
+    responseType: 'stream',
+  })
+    .then(function (response) {
+      response.data.pipe(writer)
+    });
+
+  // response.data.pipe(writer)
+
+  return new Promise((resolve, reject) => {
+    writer.on('finish', resolve);
+    writer.on('error', reject);
   });
 };
 
@@ -59,34 +91,55 @@ const pageLoader = (urlString = '', outputPath = defaultPath) => {
     }
     // console.log('File has been written');
   });
-  console.log(filesDirectoryName);
+  // console.log(filesDirectoryName);
   return axios.get(urlString)
     .then(({ data }) => {
       // return data;
       // console.log(outputPath);
       // console.log(fileName);
       const $ = cheerio.load(data);
-      const relativeLinks = $('img');
-      relativeLinks.each(function() {
+      const imageLinks = $('img');
+      imageLinks.each(function () {
         const link = $(this).attr('src');
         const fullImagePath = url.resolve(base, link);
         const fullImageName = getImageName(fullImagePath);
-        const fullImageDownLoadPath = path.resolve(filesDirectoryName, fullImageName);
-        console.log(fullImageName);
-        console.log(fullImagePath);
+        const fullImageDownLoadPath = path.resolve(filesDirectoryPath, fullImageName);
+        // console.log(fullImageName);
+        // console.log(fullImagePath);
         downLoadImage(fullImagePath, fullImageDownLoadPath);
-        // download(base+link,link,function()
-        //         {
-        //     console.log("wao great we done this...THINK DIFFERENT")
-        // })
-      // });
+        $(this).attr('src', fullImageDownLoadPath);
       });
-      // fs.writeFile(`${outputPath}/${fileName}`, `${data}`, (error) => {
-      //   if (error) {
-      //     console.log(error);
-      //   }
-      //   // console.log('File has been written');
-      // });
+
+      const linkLinks = $('link');
+
+      linkLinks.each(function () {
+        const link = $(this).attr('href');
+        const fullLinkPath = url.resolve(base, link);
+        const fullLinkName = getLinkName(fullLinkPath);
+        const fullLinkDownLoadPath = path.resolve(filesDirectoryPath, fullLinkName);
+        downLoadStylesAndJS(fullLinkPath, fullLinkDownLoadPath);
+        $(this).attr('href', fullLinkDownLoadPath);
+      });
+
+      const scriptLinks = $('script');
+
+      scriptLinks.each(function () {
+        const link = $(this).attr('src');
+        if (link) {
+          const fullLinkPath = url.resolve(base, link);
+          console.log(fullLinkPath);
+          const fullLinkName = getJSName(fullLinkPath);
+          const fullLinkDownLoadPath = path.resolve(filesDirectoryPath, fullLinkName);
+          downLoadStylesAndJS(fullLinkPath, fullLinkDownLoadPath);
+          $(this).attr('src', fullLinkDownLoadPath);
+        }
+      });
+
+      fs.writeFile(`${outputPath}/${fileName}`, `${$.html()}`, (error) => {
+        if (error) {
+          console.log(error);
+        }
+      });
     });
   // return 1;
 };

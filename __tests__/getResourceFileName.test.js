@@ -1,27 +1,15 @@
 import { getResourceFileName } from '../src/utils';
 
-describe('Check files directory name generation', () => {
-  test('check simple url', async () => {
-    const simpleUrl = 'https://testurl.com';
-    const result = getResourceFileName(simpleUrl, 'html');
-    expect(result).toBe('testurl-com.html');
+describe('Check resource files name generation', () => {
+  test('check resource url ended on .png', async () => {
+    const pngImgUrl = 'https://testurl.com/public/pictures/logo.png';
+    const result = getResourceFileName(pngImgUrl, 'png');
+    expect(result).toBe('testurl-com-public-pictures-logo.png');
   });
 
-  test('check url with path and params', async () => {
-    const simpleUrl = 'https://testurl.com/path1/path2?a=1&b=2';
-    const result = getResourceFileName(simpleUrl, 'html');
-    expect(result).toBe('testurl-com-path1-path2-a-1-b-2.html');
+  test('check url ended on .jpg', async () => {
+    const pngImgUrl = 'https://testurl.com/public/pictures/logo.jpg';
+    const result = getResourceFileName(pngImgUrl, 'png');
+    expect(result).toBe('testurl-com-public-pictures-logo.png');
   });
-
-  test('check url ended on .[format]', async () => {
-    const simpleUrl = 'https://testurl.com/index.html';
-    const result = getResourceFileName(simpleUrl, 'html');
-    expect(result).toBe('testurl-com-index-html.html');
-  });
-
-  // test('check url without potocol', async () => {
-  //   const simpleUrl = 'testurl.com';
-  //   const result = getResourceFilesDirectoryName(simpleUrl);
-  //   expect(result).toBe('testurl-com');
-  // });
 });

@@ -62,29 +62,24 @@ export const createResourceDirectory = (urlString, outputPath) => {
 };
 
 export const formatResourcesInHtml = (links, type, resourceFilesDirectoryPath, $, myUrl) => {
-  const mapTypeToAttribute = {
-    images: 'src',
-    styles: 'href',
-    scripts: 'src',
+  const map = {
+    images: ['src', 'png'],
+    styles: ['href', 'css'],
+    scripts: ['src', 'js'],
   };
 
-  const mapTypeToExt = {
-    images: 'png',
-    styles: 'css',
-    scripts: 'js',
-  };
-
+  const [attribute, ext] = map[type];
   const base = myUrl.origin;
 
   links.each(function () {
-    // const link = $(this).attr('src');
-    const link = $(this).attr(mapTypeToAttribute[type]);
+    const link = $(this).attr(attribute);
+
     if (link) {
       const fullResourcePath = url.resolve(base, link);
-      const fullResourceName = getResourceFileName(fullResourcePath, mapTypeToExt[type]);
+      const fullResourceName = getResourceFileName(fullResourcePath, ext);
       const fullResourceDownLoadPath = path.resolve(resourceFilesDirectoryPath, fullResourceName);
       downLoadResource(fullResourcePath, fullResourceDownLoadPath);
-      $(this).attr(mapTypeToAttribute[type], fullResourceDownLoadPath);
+      $(this).attr(attribute, fullResourceDownLoadPath);
     }
   });
 };

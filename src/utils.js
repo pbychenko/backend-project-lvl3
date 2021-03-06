@@ -1,6 +1,7 @@
 import path from 'path';
 import axios from 'axios';
 import fs from 'fs';
+import fsp from 'fs/promises';
 import url from 'url';
 
 export const getResourceFilesDirectoryName = (urlString) => {
@@ -50,18 +51,31 @@ export const downLoadResource = (resourcePath, downLoadPath) => {
   });
 };
 
-export const createResourceDirectory = (urlString, outputPath) => {
-  const resourceFilesDirectoryName = getResourceFilesDirectoryName(urlString);
-  const resourceFilesDirectoryPath = path.resolve(outputPath, resourceFilesDirectoryName);
-  fs.mkdir(resourceFilesDirectoryPath, (error) => {
-    if (error) {
-      console.log(error);
-    }
-  });
-  return resourceFilesDirectoryPath;
+// export const createResourceDirectory = (urlString, outputPath) => {
+export const createResourceDirectory = (resourceFilesDirectoryPath) => {
+  // const resourceFilesDirectoryName = getResourceFilesDirectoryName(urlString);
+  // const resourceFilesDirectoryPath = path.join(outputPath, resourceFilesDirectoryName);
+  // fs.mkdir(resourceFilesDirectoryPath, (er) => {
+  //   if (er) {
+  //     console.log(er);
+  //     throw er;
+  //   }
+  // });
+  // return resourceFilesDirectoryPath;
+  return fsp.mkdir(resourceFilesDirectoryPath)
+    .then((dir) => {
+      console.log(`${resourceFilesDirectoryPath} has been created`);
+      return dir;
+    })
+    .catch((er) => {
+      // console.log(er.message);
+      console.error(er.message);
+      // throw er;
+      process.exit(er.errno);
+    });
 };
 
-export const formatResourcesInHtml = (links, type, resourceFilesDirectoryPath, $, myUrl) => {
+export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath, $, myUrl) => {
   const map = {
     images: ['src', 'png'],
     styles: ['href', 'css'],
@@ -70,6 +84,16 @@ export const formatResourcesInHtml = (links, type, resourceFilesDirectoryPath, $
 
   const [attribute, ext] = map[type];
   const base = myUrl.origin;
+  // console.log(links.toArray());
+  const fullResourceDownLoadPathes = links.map(function () {
+    const link = $(this).attr(attribute);
+    if (link) {
+      const fullResourcePath = url.resolve(base, link);
+      const fullResourceName = getResourceFileName(fullResourcePath, ext);
+      return path.resolve(resourceFilesDirectoryPath, fullResourceName);
+    }
+  }).toArray();
+  console.log(fullResourceDownLoadPathes);
 
   links.each(function () {
     const link = $(this).attr(attribute);
@@ -82,4 +106,16 @@ export const formatResourcesInHtml = (links, type, resourceFilesDirectoryPath, $
       $(this).attr(attribute, fullResourceDownLoadPath);
     }
   });
+  // const promises = links.toArray().map((el) => {
+  //   const link = el.attr(attribute);
+  //   if (link) {
+  //     const fullResourcePath = url.resolve(base, link);
+  //     const fullResourceName = getResourceFileName(fullResourcePath, ext);
+  //     const fullResourceDownLoadPath = path.resolve(resourceFilesDirectoryPath, fullResourceName);
+  //     downLoadResource(fullResourcePath, fullResourceDownLoadPath);
+  //     $(this).attr(attribute, fullResourceDownLoadPath);
+  //   }
+  // });
+
+  // return Promise.all(promises);
 };

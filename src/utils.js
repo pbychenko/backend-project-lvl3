@@ -84,28 +84,32 @@ export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath
 
   const [attribute, ext] = map[type];
   const base = myUrl.origin;
-  // console.log(links.toArray());
   const fullResourceDownLoadPathes = links.map(function () {
     const link = $(this).attr(attribute);
     if (link) {
       const fullResourcePath = url.resolve(base, link);
       const fullResourceName = getResourceFileName(fullResourcePath, ext);
-      return path.resolve(resourceFilesDirectoryPath, fullResourceName);
+      return { url: fullResourcePath, downloadPath: path.resolve(resourceFilesDirectoryPath, fullResourceName) };
     }
   }).toArray();
-  console.log(fullResourceDownLoadPathes);
 
-  links.each(function () {
-    const link = $(this).attr(attribute);
+  // console.log(fullResourceDownLoadPathes);
+  const promises = fullResourceDownLoadPathes.map((el) => downLoadResource(el.url, el.downloadPath)
+    .then(() => console.log('resource file has been created'))
+    .catch((e) => console.error(e)));
+  const promise = Promise.all(promises);
+  return promise;
+  // links.each(function () {
+  //   const link = $(this).attr(attribute);
 
-    if (link) {
-      const fullResourcePath = url.resolve(base, link);
-      const fullResourceName = getResourceFileName(fullResourcePath, ext);
-      const fullResourceDownLoadPath = path.resolve(resourceFilesDirectoryPath, fullResourceName);
-      downLoadResource(fullResourcePath, fullResourceDownLoadPath);
-      $(this).attr(attribute, fullResourceDownLoadPath);
-    }
-  });
+  //   if (link) {
+  //     const fullResourcePath = url.resolve(base, link);
+  //     const fullResourceName = getResourceFileName(fullResourcePath, ext);
+  //     const fullResourceDownLoadPath = path.resolve(resourceFilesDirectoryPath, fullResourceName);
+  //     downLoadResource(fullResourcePath, fullResourceDownLoadPath);
+  //     $(this).attr(attribute, fullResourceDownLoadPath);
+  //   }
+  // });
   // const promises = links.toArray().map((el) => {
   //   const link = el.attr(attribute);
   //   if (link) {

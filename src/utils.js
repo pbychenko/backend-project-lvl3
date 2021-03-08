@@ -3,6 +3,7 @@ import axios from 'axios';
 import fs from 'fs';
 import fsp from 'fs/promises';
 import url from 'url';
+import { bind } from 'lodash';
 
 export const getResourceFilesDirectoryName = (urlString) => {
   // const myUrl = new URL('https://test.com');
@@ -34,21 +35,37 @@ export const getResourceFileName = (urlString, format) => {
 
 export const downLoadResource = (resourcePath, downLoadPath) => {
   const writer = fs.createWriteStream(downLoadPath);
+  // axios({
+  //   method: 'get',
+  //   url: resourcePath,
+  //   responseType: 'stream',
+  // })
+  //   .then(function (response) {
+  //     response.data.pipe(writer)
+  //   });
 
-  axios({
+
+  // return new Promise((resolve, reject) => {
+  //   writer.on('finish', resolve);
+  //   writer.on('error', reject);
+  // });
+
+  return axios({
     method: 'get',
     url: resourcePath,
     responseType: 'stream',
   })
-    .then(function (response) {
-      response.data.pipe(writer)
+    .then((response) => response.data.pipe(writer))
+    .then(() => {
+      // console.log(downLoadPath);
+      return downLoadPath;
+    })
+    .catch((er) => {
+      // console.log(er.message);
+      console.error('file cant be downloaded');
+      // throw er;
+      process.exit(er.errno);
     });
-
-
-  return new Promise((resolve, reject) => {
-    writer.on('finish', resolve);
-    writer.on('error', reject);
-  });
 };
 
 // export const createResourceDirectory = (urlString, outputPath) => {
@@ -64,7 +81,7 @@ export const createResourceDirectory = (resourceFilesDirectoryPath) => {
   // return resourceFilesDirectoryPath;
   return fsp.mkdir(resourceFilesDirectoryPath)
     .then((dir) => {
-      console.log(`${resourceFilesDirectoryPath} has been created`);
+      // console.log(`${resourceFilesDirectoryPath} has been created`);
       return dir;
     })
     .catch((er) => {
@@ -82,22 +99,42 @@ export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath
     scripts: ['src', 'js'],
   };
 
+  // console.log('before');
+  // console.log($);
   const [attribute, ext] = map[type];
   const base = myUrl.origin;
   const fullResourceDownLoadPathes = links.map(function () {
     const link = $(this).attr(attribute);
+    // const context = this;
     if (link) {
       const fullResourcePath = url.resolve(base, link);
       const fullResourceName = getResourceFileName(fullResourcePath, ext);
-      return { url: fullResourcePath, downloadPath: path.resolve(resourceFilesDirectoryPath, fullResourceName) };
+      // return { url: fullResourcePath, downloadPath: path.resolve(resourceFilesDirectoryPath, fullResourceName) };
+      return downLoadResource(fullResourcePath, path.resolve(resourceFilesDirectoryPath, fullResourceName))
+        .then((dowloadPath) => {
+          // console.log(dowloadPath);
+          // console.log()
+          // console.log(context);
+          // console.log(attribute);
+          $(this).attr(attribute, dowloadPath);
+          // return $;
+        })
+        .catch(() => console.log('some error again'));
     }
   }).toArray();
 
+  // }).toArray();
+
   // console.log(fullResourceDownLoadPathes);
-  const promises = fullResourceDownLoadPathes.map((el) => downLoadResource(el.url, el.downloadPath)
-    .then(() => console.log('resource file has been created'))
-    .catch((e) => console.error(e)));
-  const promise = Promise.all(promises);
+  // const promises = fullResourceDownLoadPathes.map((el) => downLoadResource(el.url, el.downloadPath)
+  //   .then(() => console.log('resource file has been created'))
+  //   .catch((e) => console.error(e)));
+  // const promise = Promise.all(promises);
+
+  // console.log('after');
+  // console.log($);
+  // const t = $;
+  const promise = Promise.all(fullResourceDownLoadPathes).then(() => $);
   return promise;
   // links.each(function () {
   //   const link = $(this).attr(attribute);

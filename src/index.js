@@ -1,6 +1,7 @@
 // import _ from 'lodash';
 import path from 'path';
 import fs from 'fs';
+import fsp from 'fs/promises';
 import axios from 'axios';
 import cheerio from 'cheerio';
 // import url from 'url';
@@ -41,27 +42,53 @@ const pageLoader = (urlString = '', outputPath = defaultDirectory) => {
   //       }
   //     });
   //   });
-  return createResourceDirectory(resourceFilesDirectory).then(() => {
-    axios.get(urlString)
-      .then(({ data }) => {
-        const $ = cheerio.load(data);
+  // return createResourceDirectory(resourceFilesDirectory).then(() => {
+  //   axios.get(urlString)
+  //     .then(({ data }) => {
+  //       const $ = cheerio.load(data);
 
-        const imageLinks = $('img');
-        editResourcePathesInHtml(imageLinks, 'images', resourceFilesDirectory, $, myUrl);
+  //       const imageLinks = $('img');
+  //       editResourcePathesInHtml(imageLinks, 'images', resourceFilesDirectory, $, myUrl);
 
-        const stylesLinks = $('link[rel="stylesheet"]');
-        editResourcePathesInHtml(stylesLinks, 'styles', resourceFilesDirectory, $, myUrl);
+  //       const stylesLinks = $('link[rel="stylesheet"]');
+  //       editResourcePathesInHtml(stylesLinks, 'styles', resourceFilesDirectory, $, myUrl);
 
-        const scriptLinks = $('script');
-        editResourcePathesInHtml(scriptLinks, 'scripts', resourceFilesDirectory, $, myUrl);
+  //       const scriptLinks = $('script');
+  //       editResourcePathesInHtml(scriptLinks, 'scripts', resourceFilesDirectory, $, myUrl);
 
-        fs.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`, (error) => {
-          if (error) {
-            console.log(error);
-          }
-        });
-      });
-  });
+  //       console.log()
+
+  //       fs.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`, (error) => {
+  //         if (error) {
+  //           console.log(error);
+  //         }
+  //       });
+  //     });
+  // });
+  return createResourceDirectory(resourceFilesDirectory)
+    .then(() => axios.get(urlString))
+    .then(({ data }) => cheerio.load(data))
+    .then(($) => {
+      const imageLinks = $('img');
+      return editResourcePathesInHtml(imageLinks, 'images', resourceFilesDirectory, $, myUrl);
+      // return $;
+    })
+    .then(($) => {
+      const stylesLinks = $('link[rel="stylesheet"]');
+      return editResourcePathesInHtml(stylesLinks, 'styles', resourceFilesDirectory, $, myUrl);
+      // return $;
+    })
+    .then(($) => {
+      const scriptLinks = $('script');
+      return editResourcePathesInHtml(scriptLinks, 'scripts', resourceFilesDirectory, $, myUrl);
+      // return $;
+    })
+    .then(($) => {
+      console.log('her12e');
+      // console.log($);
+      fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`);
+    })
+    .catch((er) => console.log(er));
 };
 
 export default pageLoader;

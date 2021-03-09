@@ -3,7 +3,6 @@ import axios from 'axios';
 import fs from 'fs';
 import fsp from 'fs/promises';
 import url from 'url';
-import { bind } from 'lodash';
 
 export const getResourceFilesDirectoryName = (urlString) => {
   // const myUrl = new URL('https://test.com');
@@ -35,20 +34,6 @@ export const getResourceFileName = (urlString, format) => {
 
 export const downLoadResource = (resourcePath, downLoadPath) => {
   const writer = fs.createWriteStream(downLoadPath);
-  // axios({
-  //   method: 'get',
-  //   url: resourcePath,
-  //   responseType: 'stream',
-  // })
-  //   .then(function (response) {
-  //     response.data.pipe(writer)
-  //   });
-
-
-  // return new Promise((resolve, reject) => {
-  //   writer.on('finish', resolve);
-  //   writer.on('error', reject);
-  // });
 
   return axios({
     method: 'get',
@@ -56,34 +41,17 @@ export const downLoadResource = (resourcePath, downLoadPath) => {
     responseType: 'stream',
   })
     .then((response) => response.data.pipe(writer))
-    .then(() => {
-      // console.log(downLoadPath);
-      return downLoadPath;
-    })
+    .then(() => downLoadPath)
     .catch((er) => {
-      // console.log(er.message);
       console.error('file cant be downloaded');
-      // throw er;
       process.exit(er.errno);
     });
 };
 
 // export const createResourceDirectory = (urlString, outputPath) => {
 export const createResourceDirectory = (resourceFilesDirectoryPath) => {
-  // const resourceFilesDirectoryName = getResourceFilesDirectoryName(urlString);
-  // const resourceFilesDirectoryPath = path.join(outputPath, resourceFilesDirectoryName);
-  // fs.mkdir(resourceFilesDirectoryPath, (er) => {
-  //   if (er) {
-  //     console.log(er);
-  //     throw er;
-  //   }
-  // });
-  // return resourceFilesDirectoryPath;
   return fsp.mkdir(resourceFilesDirectoryPath)
-    .then((dir) => {
-      // console.log(`${resourceFilesDirectoryPath} has been created`);
-      return dir;
-    })
+    .then((dir) => dir)
     .catch((er) => {
       // console.log(er.message);
       console.error(er.message);

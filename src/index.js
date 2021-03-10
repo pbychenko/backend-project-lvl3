@@ -1,4 +1,3 @@
-// import _ from 'lodash';
 import path from 'path';
 import { promises as fsp } from 'fs';
 import axios from 'axios';

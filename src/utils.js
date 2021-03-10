@@ -2,7 +2,6 @@ import path from 'path';
 import axios from 'axios';
 import fs from 'fs';
 import fsp from 'fs/promises';
-import url from 'url';
 
 const formatUrl = (url) => {
   return url.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-');
@@ -57,17 +56,15 @@ export const downLoadResource = (resourcePath, downLoadPath) => {
     });
 };
 
-// export const createResourceDirectory = (urlString, outputPath) => {
-export const createResourceDirectory = (resourceFilesDirectoryPath) => {
-  return fsp.mkdir(resourceFilesDirectoryPath)
+export const createResourceDirectory = (resourceFilesDirectoryPath) => (
+  fsp.mkdir(resourceFilesDirectoryPath)
     .then((dir) => dir)
     .catch((er) => {
-      // console.log(er.message);
       console.error(er.message);
-      // throw er;
       process.exit(er.errno);
-    });
-};
+    })
+);
+
 
 export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath, $, myUrl) => {
   const map = {
@@ -76,42 +73,24 @@ export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath
     scripts: ['src', 'js'],
   };
 
-  // console.log('before');
-  // console.log($);
   const [attribute, ext] = map[type];
   const base = myUrl.origin;
-  const fullResourceDownLoadPathes = links.map(function () {
+  const promises = links.map(function () {
     const link = $(this).attr(attribute);
-    // const context = this;
     if (link) {
-      const fullResourcePath = url.resolve(base, link); //new URL(link, base)
-      // const fullResourcePath = new URL(link, base);
-      const fullResourceName = getResourceFileName(fullResourcePath, ext);
-      // return { url: fullResourcePath, downloadPath: path.resolve(resourceFilesDirectoryPath, fullResourceName) };
-      return downLoadResource(fullResourcePath, path.resolve(resourceFilesDirectoryPath, fullResourceName))
-        .then((dowloadPath) => {
-          // console.log(dowloadPath);
-          // console.log()
-          // console.log(context);
-          // console.log(attribute);
-          $(this).attr(attribute, dowloadPath);
-          // return $;
-        })
-        .catch(() => console.log('some error again'));
+      if (!isValidUrl(link)) {
+        const { href } = new URL(link, base);
+        console.log(href);
+        const fullResourceName = getResourceFileName(href, ext);
+        return downLoadResource(href, path.resolve(resourceFilesDirectoryPath, fullResourceName))
+          .then((dowloadPath) => {
+            $(this).attr(attribute, dowloadPath);
+          })
+          .catch(() => console.log('some error again'));
+      }
     }
   }).toArray();
 
-  const promise = Promise.all(fullResourceDownLoadPathes).then(() => $);
+  const promise = Promise.all(promises).then(() => $);
   return promise;
-  // links.each(function () {
-  //   const link = $(this).attr(attribute);
-
-  //   if (link) {
-  //     const fullResourcePath = url.resolve(base, link);
-  //     const fullResourceName = getResourceFileName(fullResourcePath, ext);
-  //     const fullResourceDownLoadPath = path.resolve(resourceFilesDirectoryPath, fullResourceName);
-  //     downLoadResource(fullResourcePath, fullResourceDownLoadPath);
-  //     $(this).attr(attribute, fullResourceDownLoadPath);
-  //   }
-  // });
 };

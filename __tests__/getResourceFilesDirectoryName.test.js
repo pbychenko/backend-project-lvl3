@@ -18,10 +18,4 @@ describe('Check files directory name generation', () => {
     const result = getResourceFilesDirectoryName(simpleUrl);
     expect(result).toBe('testurl-com-index-html_files');
   });
-
-  // test('check url without potocol', async () => {
-  //   const simpleUrl = 'testurl.com';
-  //   const result = getResourceFilesDirectoryName(simpleUrl);
-  //   expect(result).toBe('testurl-com');
-  // });
 });

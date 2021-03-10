@@ -4,16 +4,25 @@ import fs from 'fs';
 import fsp from 'fs/promises';
 import url from 'url';
 
+const formatUrl = (url) => {
+  return url.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-');
+};
+
+export const isValidUrl = (url) => {
+  try {
+    return new URL(url, url) && true;
+  } catch {
+    return false;
+  }
+};
+
 export const getResourceFilesDirectoryName = (urlString) => {
-  // const myUrl = new URL('https://test.com');
-  // console.log(myUrl);
-  // console.log(url.parse('http://stackoverflow.com/questions/17184791.html'));
-  const filesDirectory = `${urlString.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-')}_files`;
+  const filesDirectory = `${formatUrl(urlString)}_files`;
   return filesDirectory;
 };
 
 export const getHtmlFileName = (urlString) => {
-  const newPath = `${urlString.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-')}.html`;
+  const newPath = `${formatUrl(urlString)}.html`;
   return newPath;
 };
 
@@ -75,7 +84,8 @@ export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath
     const link = $(this).attr(attribute);
     // const context = this;
     if (link) {
-      const fullResourcePath = url.resolve(base, link);
+      const fullResourcePath = url.resolve(base, link); //new URL(link, base)
+      // const fullResourcePath = new URL(link, base);
       const fullResourceName = getResourceFileName(fullResourcePath, ext);
       // return { url: fullResourcePath, downloadPath: path.resolve(resourceFilesDirectoryPath, fullResourceName) };
       return downLoadResource(fullResourcePath, path.resolve(resourceFilesDirectoryPath, fullResourceName))
@@ -91,17 +101,6 @@ export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath
     }
   }).toArray();
 
-  // }).toArray();
-
-  // console.log(fullResourceDownLoadPathes);
-  // const promises = fullResourceDownLoadPathes.map((el) => downLoadResource(el.url, el.downloadPath)
-  //   .then(() => console.log('resource file has been created'))
-  //   .catch((e) => console.error(e)));
-  // const promise = Promise.all(promises);
-
-  // console.log('after');
-  // console.log($);
-  // const t = $;
   const promise = Promise.all(fullResourceDownLoadPathes).then(() => $);
   return promise;
   // links.each(function () {
@@ -115,16 +114,4 @@ export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath
   //     $(this).attr(attribute, fullResourceDownLoadPath);
   //   }
   // });
-  // const promises = links.toArray().map((el) => {
-  //   const link = el.attr(attribute);
-  //   if (link) {
-  //     const fullResourcePath = url.resolve(base, link);
-  //     const fullResourceName = getResourceFileName(fullResourcePath, ext);
-  //     const fullResourceDownLoadPath = path.resolve(resourceFilesDirectoryPath, fullResourceName);
-  //     downLoadResource(fullResourcePath, fullResourceDownLoadPath);
-  //     $(this).attr(attribute, fullResourceDownLoadPath);
-  //   }
-  // });
-
-  // return Promise.all(promises);
 };

@@ -8,6 +8,7 @@ import cheerio from 'cheerio';
 import {
   getResourceFilesDirectoryName,
   getHtmlFileName,
+  isValidUrl,
   // getResourceFileName,
   // downLoadResource,
   createResourceDirectory, editResourcePathesInHtml,
@@ -15,13 +16,18 @@ import {
 
 const defaultDirectory = process.cwd();
 
-const pageLoader = (urlString = '', outputPath = defaultDirectory) => {
-  const htmlFileName = getHtmlFileName(urlString);
-  const myUrl = new URL(urlString);
-  const resourceFilesDirectoryName = getResourceFilesDirectoryName(urlString);
+const pageLoader = (url, outputPath = defaultDirectory) => {
+  if (!isValidUrl(url)) {
+    console.error('Please input correct url');
+    process.exit();
+  }
+
+  const resourceFilesDirectoryName = getResourceFilesDirectoryName(url);
+  const htmlFileName = getHtmlFileName(url);
+  const myUrl = new URL(url);
   const resourceFilesDirectory = path.join(outputPath, resourceFilesDirectoryName);
   return createResourceDirectory(resourceFilesDirectory)
-    .then(() => axios.get(urlString))
+    .then(() => axios.get(url))
     .then(({ data }) => cheerio.load(data))
     .then(($) => {
       const imageLinks = $('img');

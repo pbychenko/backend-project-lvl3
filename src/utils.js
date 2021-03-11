@@ -1,11 +1,8 @@
 import path from 'path';
 import axios from 'axios';
-import fs from 'fs';
-import fsp from 'fs/promises';
+import fs, { promises as fsp } from 'fs';
 
-const formatUrl = (url) => {
-  return url.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-');
-};
+const formatUrl = (url) => url.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-');
 
 export const isValidUrl = (url) => {
   try {
@@ -26,16 +23,7 @@ export const getHtmlFileName = (urlString) => {
 };
 
 export const getResourceFileName = (urlString, format) => {
-  // const newPath = `${url.split('://')[1].replace(/\//g, '-')}.html`;
-  // const testPath = urlString.split('://')[1].replace(/\//g, '-');
-  // console.log(path.parse(testPath));
-  const tempPath = urlString.split('://')[1];
-  // console.log(tempPath);
-  const { dir, name } = path.parse(tempPath);
-  // console.log(dir);
-  // console.log(name);
-  const formattedPath = `${dir}/${name}`;
-  const newPath = `${formattedPath.replace(/[^a-zA-ZА-Яа-я0-9]/g, '-')}.${format}`;
+  const newPath = `${formatUrl(urlString)}.${format}`;
   return newPath;
 };
 
@@ -80,7 +68,6 @@ export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath
     if (link) {
       if (!isValidUrl(link)) {
         const { href } = new URL(link, base);
-        console.log(href);
         const fullResourceName = getResourceFileName(href, ext);
         return downLoadResource(href, path.resolve(resourceFilesDirectoryPath, fullResourceName))
           .then((dowloadPath) => {

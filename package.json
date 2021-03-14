@@ -17,7 +17,7 @@
   },
   "license": "ISC",
   "bin": {
-    "page-loader": "bin/page-loader.js"
+    "page-loader": "src/bin/page-loader.js"
   },
   "files": [
     "dist"

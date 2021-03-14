@@ -6,7 +6,7 @@
     "hexlet",
     "page-loader"
   ],
-  "main": "dist/index.js",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/pbychenko/backend-project-lvl3"

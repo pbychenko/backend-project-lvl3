@@ -13,6 +13,7 @@ import {
   // downLoadResource,
   createResourceDirectory, editResourcePathesInHtml,
 } from './utils.js';
+import { error } from 'console';
 
 const defaultDirectory = process.cwd();
 
@@ -65,7 +66,10 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       console.log('her12e');
       fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`);
     })
-    .catch((er) => console.log(er));
+    .catch((er) => {
+      console.error(er);
+      throw error;
+    })      
 };
 
 export default pageLoader;

@@ -18,9 +18,10 @@ const defaultDirectory = process.cwd();
 
 const pageLoader = (url, outputPath = defaultDirectory) => {
   if (!isValidUrl(url)) {
-    console.error('Please input correct url');
-    process.exit();
-    throw new Error('invalid url');    
+    throw new Error('invalid url');
+    // console.error('Please input correct url');
+    // process.exit();
+    // throw new Error('invalid url');    
   }
 
   const resourceFilesDirectoryName = getResourceFilesDirectoryName(url);

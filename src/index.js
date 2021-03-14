@@ -12,7 +12,7 @@ import {
   // getResourceFileName,
   // downLoadResource,
   createResourceDirectory, editResourcePathesInHtml,
-} from './utils';
+} from './utils.js';
 
 const defaultDirectory = process.cwd();
 

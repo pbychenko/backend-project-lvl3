@@ -2,7 +2,8 @@ install:
 	npm install
 
 start: 
-	npx babel-node src/bin/page-loader.js
+	# npx src/bin/page-loader.js
+	node src/bin/page-loader.js
 
 publish: 
 	npm publish --dry-run

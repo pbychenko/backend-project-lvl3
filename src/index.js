@@ -68,7 +68,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     })
     .catch((er) => {
       console.error(er);
-      throw error;
+      throw er;
     })      
 };
 

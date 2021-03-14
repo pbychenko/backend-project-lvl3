@@ -40,7 +40,8 @@ export const downLoadResource = (resourcePath, downLoadPath) => {
     .then(() => downLoadPath)
     .catch((er) => {
       console.error('file cant be downloaded');
-      process.exit(er.errno);
+      throw er;
+      // process.exit(er.errno);
     });
 };
 
@@ -49,7 +50,8 @@ export const createResourceDirectory = (resourceFilesDirectoryPath) => (
     .then((dir) => dir)
     .catch((er) => {
       console.error(er.message);
-      process.exit(er.errno);
+      throw er;
+      // process.exit(er.errno);
     })
 );
 

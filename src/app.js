@@ -1,20 +1,23 @@
-// import commander from 'commander';
+import commander from 'commander';
+// import debug from 'debug';
 import pageLoader from '.';
+
+// const logPageLoader = debug(pageLoader);
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
 const runApp = () => {
-  const testPath = '/home/pavel/projects/catalog';
-  console.log(pageLoader('https://fc-arsenal.com/pered-matchem/mikel-arteta-rodzhers-zasluzhivaet-priz-luchshemu-treneru-sezona', testPath));
+  // const testPath = '/home/pavel/hexlet_projects/tet';
+  // console.log(pageLoader('https://fc-arsenal.com/pered-matchem/mikel-arteta-rodzhers-zasluzhivaet-priz-luchshemu-treneru-sezona', testPath));
   // console.log(pageLoader('https://ru.hexlet.io/projects/', testPath));
-  // commander.version('0.0.1')
-  //   .description('Some description')
-  //   .option('-out, --output [path]', 'Download path', 'process.cwd()')
-  //   .arguments('<url>')
-  //   .action((url) => {
-  //     console.log(pageLoader(url, commander.output));
-  //   })
-  //   .parse(process.argv);
+  commander.version('0.0.1')
+    .description('Some description')
+    .option('-out, --output [path]', 'Download path', 'process.cwd()')
+    .arguments('<url>')
+    .action((url) => {
+      console.log(pageLoader(url, commander.output));
+    })
+    .parse(process.argv);
 };
 
 

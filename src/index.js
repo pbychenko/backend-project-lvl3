@@ -2,6 +2,7 @@ import path from 'path';
 import { promises as fsp } from 'fs';
 import axios from 'axios';
 import cheerio from 'cheerio';
+import Listr from 'listr';
 // import url from 'url';
 
 import {
@@ -25,24 +26,41 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   const htmlFileName = getHtmlFileName(url);
   const myUrl = new URL(url);
   const resourceFilesDirectory = path.join(outputPath, resourceFilesDirectoryName);
+  const locs = ['img', 'link[rel="stylesheet"]', 'script'];
+  const map = {
+    img: 'images',
+    'link[rel="stylesheet"]': 'styles',
+    script: 'scripts',
+  };
   return createResourceDirectory(resourceFilesDirectory)
     .then(() => axios.get(url))
     .then(({ data }) => cheerio.load(data))
+    // .then(($) => {
+    //   const imageLinks = $('img');
+    //   return editResourcePathesInHtml(imageLinks, 'images', resourceFilesDirectory, $, myUrl);
+    // })
+    // .then(($) => {
+    //   const stylesLinks = $('link[rel="stylesheet"]');
+    //   return editResourcePathesInHtml(stylesLinks, 'styles', resourceFilesDirectory, $, myUrl);
+    // })
+    // .then(($) => {
+    //   const scriptLinks = $('script');
+    //   return editResourcePathesInHtml(scriptLinks, 'scripts', resourceFilesDirectory, $, myUrl);
+    // })
     .then(($) => {
-      const imageLinks = $('img');
-      return editResourcePathesInHtml(imageLinks, 'images', resourceFilesDirectory, $, myUrl);
+      const tasks = locs.map((loc) => (
+        {
+          title: `Download ${loc}`,
+          task: () => {
+            const links = $(loc);
+            return editResourcePathesInHtml(links, map[loc], resourceFilesDirectory, $, myUrl);
+          },
+        }));
+      const listr = new Listr(tasks, { concurrent: true });
+      return listr.run().then(() => $);
     })
     .then(($) => {
-      const stylesLinks = $('link[rel="stylesheet"]');
-      return editResourcePathesInHtml(stylesLinks, 'styles', resourceFilesDirectory, $, myUrl);
-    })
-    .then(($) => {
-      const scriptLinks = $('script');
-      // console.log('here');
-      return editResourcePathesInHtml(scriptLinks, 'scripts', resourceFilesDirectory, $, myUrl);
-    })
-    .then(($) => {
-      // console.log('her12e');
+      console.log('her12e');
       fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`);
     })
     .catch((er) => console.log(er));

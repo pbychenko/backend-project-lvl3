@@ -85,7 +85,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     })
     .catch((er) => {
       console.error('xnj xnj yt nfr');
-      process.exit(1);
+      // process.exit(1);
     })      
 };
 

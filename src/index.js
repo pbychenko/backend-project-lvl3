@@ -1,6 +1,6 @@
 import path from 'path';
 // import { promises as fsp } from 'fs';
-import {constants as constants, promises as fsp } from 'fs';
+import fs, {constants as constants, promises as fsp } from 'fs';
 
 
 
@@ -31,6 +31,12 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   }
 
   // fsp.access(outputPath, constants.W_OK).catch((er) => { throw er });
+  try {
+    fs.accessSync(outputPath, constants.W_OK);
+    console.log('can read/write');
+  } catch (err) {
+   throw err;
+  }
 
   const resourceFilesDirectoryName = getResourceFilesDirectoryName(url);
   const htmlFileName = getHtmlFileName(url);

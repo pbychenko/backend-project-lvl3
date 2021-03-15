@@ -23,10 +23,12 @@ export const getHtmlFileName = (urlString) => {
 };
 
 export const getResourceFileName = (urlString, format) => {
-  const newPath = `${formatUrl(urlString)}.${format}`;
+  const tempPath = urlString.split('://')[1];
+  const { dir, name } = path.parse(tempPath);
+  const formattedPath = `${dir}/${name}`;
+  const newPath = `${formattedPath.replace(/[^a-zA-ZА-Яа-я0-9]/g, '-')}.${format}`;
   return newPath;
 };
-
 
 export const downLoadResource = (resourcePath, downLoadPath) => {
   const writer = fs.createWriteStream(downLoadPath);
@@ -71,9 +73,13 @@ export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath
       if (!isValidUrl(link)) {
         const { href } = new URL(link, base);
         const fullResourceName = getResourceFileName(href, ext);
+        // console.log(fullResourceName);
         return downLoadResource(href, path.resolve(resourceFilesDirectoryPath, fullResourceName))
-          .then((dowloadPath) => {
-            $(this).attr(attribute, dowloadPath);
+          .then(() => {
+            console.log(fullResourceName);
+            const { dir, name } = path.parse(resourceFilesDirectoryPath)
+            console.log(name);
+            $(this).attr(attribute, `${name}/${fullResourceName}`);
           })
           .catch(() => console.log('some error again'));
       }

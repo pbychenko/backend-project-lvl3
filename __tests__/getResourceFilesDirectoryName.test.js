@@ -1,4 +1,4 @@
-import { getResourceFilesDirectoryName } from '../src/utils';
+import { getResourceFilesDirectoryName } from '../src/utils.js';
 
 describe('Check files directory name generation', () => {
   test('check simple url', async () => {

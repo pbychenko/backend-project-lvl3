@@ -63,7 +63,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       return listr.run().then(() => $);
     })
     .then(($) => {
-      console.log('her12e');
+      // console.log('her12e');
       fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`);
     })
     .catch((er) => {

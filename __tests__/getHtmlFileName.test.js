@@ -1,4 +1,4 @@
-import { getHtmlFileName } from '../src/utils';
+import { getHtmlFileName } from '../src/utils.js';
 
 describe('Check files directory name generation', () => {
   test('check simple url', async () => {

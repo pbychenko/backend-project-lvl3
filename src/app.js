@@ -4,7 +4,7 @@ import pageLoader from './index.js';
 
 // const logPageLoader = debug(pageLoader);
 
-process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
+// process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
 const runApp = () => {
   // const testPath = '/home/pavel/hexlet_projects/tet';
@@ -16,9 +16,15 @@ const runApp = () => {
     .arguments('<url>')
     .action((url) => {
       return pageLoader(url, commander.output)
-      .then(() => console.log('all ok'))
+      .then(() => {
+        console.log('all ok');
+        process.exit();
+      })
       .catch((er) => {
-        throw er;
+        console.error(er.message);
+        process.exit(1)
+        
+        // throw er;
       })
       // console.log(result);
     })

@@ -84,8 +84,8 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
     })
     .catch((er) => {
-      console.error(er);
-      throw er;
+      console.error('xnj xnj yt nfr');
+      process.exit(1);
     })      
 };
 

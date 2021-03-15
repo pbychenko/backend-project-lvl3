@@ -13,7 +13,6 @@ import {
   // downLoadResource,
   createResourceDirectory, editResourcePathesInHtml,
 } from './utils.js';
-import { error } from 'console';
 
 const defaultDirectory = process.cwd();
 
@@ -35,6 +34,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     'link[rel="stylesheet"]': 'styles',
     script: 'scripts',
   };
+  
   return createResourceDirectory(resourceFilesDirectory)
     .then(() => axios.get(url))
     .then(({ data }) => cheerio.load(data))
@@ -51,6 +51,17 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     //   return editResourcePathesInHtml(scriptLinks, 'scripts', resourceFilesDirectory, $, myUrl);
     // })
     .then(($) => {
+      console.log('can');
+      const canonicalElement = $('link[rel="canonical"]');
+      if (canonicalElement)  {
+        const link = canonicalElement.attr('href');
+        if (link) {
+          canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
+        }
+      }
+      
+      // console.log(link);
+
       const tasks = locs.map((loc) => (
         {
           title: `Download ${loc}`,

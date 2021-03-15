@@ -52,13 +52,14 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     // })
     .then(($) => {
       // console.log('can');
-      // const canonicalElement = $('link[rel="canonical"]');
-      // if (canonicalElement)  {
-      //   const link = canonicalElement.attr('href');
-      //   if (link) {
-      //     canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
-      //   }
-      // }
+      const canonicalElement = $('link[rel="canonical"]');
+      if (canonicalElement)  {
+        const link = canonicalElement.attr('href');
+        if (link) {
+          canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
+          // fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${$.html()}`);
+        }
+      }
       
       // console.log(link);
 
@@ -76,6 +77,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     .then(($) => {
       // console.log('her12e');
       fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`);
+      fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${$.html()}`);
     })
     .catch((er) => {
       console.error(er);

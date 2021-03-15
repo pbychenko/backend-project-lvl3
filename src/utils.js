@@ -55,7 +55,7 @@ export const createResourceDirectory = (resourceFilesDirectoryPath) => (
     .then((dir) => dir)
     .catch((er) => {
       console.error(er.message);
-      console.log('huy')
+      // console.log('huy')
       throw er;
       // process.exit(er.errno);
     })

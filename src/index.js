@@ -30,7 +30,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     // throw new Error('invalid url');    
   }
 
-  fsp.access(outputPath, constants.W_OK).catch((er) => { throw er });
+  // fsp.access(outputPath, constants.W_OK).catch((er) => { throw er });
 
   const resourceFilesDirectoryName = getResourceFilesDirectoryName(url);
   const htmlFileName = getHtmlFileName(url);

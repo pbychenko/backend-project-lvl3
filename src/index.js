@@ -34,10 +34,14 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     'link[rel="stylesheet"]': 'styles',
     script: 'scripts',
   };
+  let initHtml;
   
   return createResourceDirectory(resourceFilesDirectory)
     .then(() => axios.get(url))
-    .then(({ data }) => cheerio.load(data))
+    .then(({ data }) => {
+      initHtml = data;
+      return cheerio.load(data);
+    })
     // .then(($) => {
     //   const imageLinks = $('img');
     //   return editResourcePathesInHtml(imageLinks, 'images', resourceFilesDirectory, $, myUrl);
@@ -77,7 +81,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     .then(($) => {
       // console.log('her12e');
       fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`);
-      fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${$.html()}`);
+      fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${data}`);
     })
     .catch((er) => {
       console.error(er);

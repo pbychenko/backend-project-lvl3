@@ -19,13 +19,13 @@ const runApp = () => {
     .action((url) => {
       return pageLoader(url, commander.output)
       .then(() => {
-        console.log('all ok');
-        // process.exit();
+        // console.log('all ok');
+        process.exit();
       })
       .catch((er) => {
         console.error(er.message);
-        throw er;
-        // process.exit(1);        
+        // throw er;
+        process.exit(1);        
       })
       // console.log(result);
     })

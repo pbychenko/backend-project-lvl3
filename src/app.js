@@ -24,8 +24,8 @@ const runApp = () => {
       })
       .catch((er) => {
         console.error(er.message);
-        process.exit(1);        
-        // throw er;
+        throw er;
+        // process.exit(1);        
       })
       // console.log(result);
     })

@@ -50,7 +50,7 @@ export const downLoadResource = (resourcePath, downLoadPath) => {
 };
 
 export const createResourceDirectory = (outputPath, resourceFilesDirectoryPath) => (
-  fsp.access(outputPath, constants.R_OK | constants.W_OK)
+  fsp.access(outputPath, constants.W_OK)
     .then(() => fsp.mkdir(resourceFilesDirectoryPath))
     .then((dir) => dir)
     .catch((er) => {

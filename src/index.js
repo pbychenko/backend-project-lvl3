@@ -1,5 +1,10 @@
 import path from 'path';
-import { promises as fsp } from 'fs';
+// import { promises as fsp } from 'fs';
+import {constants as constants, promises as fsp } from 'fs';
+
+
+
+
 import axios from 'axios';
 import cheerio from 'cheerio';
 import Listr from 'listr';
@@ -13,6 +18,7 @@ import {
   // downLoadResource,
   createResourceDirectory, editResourcePathesInHtml,
 } from './utils.js';
+// import { error } from 'console';
 
 const defaultDirectory = process.cwd();
 
@@ -23,6 +29,8 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     // process.exit();
     // throw new Error('invalid url');    
   }
+
+  fsp.access(outputPath, constants.W_OK).catch((er) => { throw er });
 
   const resourceFilesDirectoryName = getResourceFilesDirectoryName(url);
   const htmlFileName = getHtmlFileName(url);
@@ -36,7 +44,8 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   };
   let initHtml;
   
-  return createResourceDirectory(outputPath, resourceFilesDirectory)
+  return createResourceDirectory(resourceFilesDirectory)
+    // .catch((er) => {throw er})
     .then(() => axios.get(url))
     .then(({ data }) => {
       initHtml = data;

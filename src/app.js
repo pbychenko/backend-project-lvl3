@@ -20,7 +20,7 @@ const runApp = () => {
       return pageLoader(url, commander.output)
       .then(() => {
         // console.log('all ok');
-        process.exit();
+        // process.exit();
       })
       .catch((er) => {
         console.error(er.message);

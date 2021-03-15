@@ -1,6 +1,6 @@
 import path from 'path';
 import axios from 'axios';
-import fs, { promises as fsp } from 'fs';
+import fs, { constants as constants, promises as fsp } from 'fs';
 
 const formatUrl = (url) => url.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-');
 
@@ -49,11 +49,13 @@ export const downLoadResource = (resourcePath, downLoadPath) => {
     });
 };
 
-export const createResourceDirectory = (resourceFilesDirectoryPath) => (
-  fsp.mkdir(resourceFilesDirectoryPath)
+export const createResourceDirectory = (outputPath, resourceFilesDirectoryPath) => (
+  fsp.access(outputPath, constants.R_OK | constants.W_OK)
+    .then(() => fsp.mkdir(resourceFilesDirectoryPath))
     .then((dir) => dir)
     .catch((er) => {
       console.error(er.message);
+      console.log('huy')
       throw er;
       // process.exit(er.errno);
     })

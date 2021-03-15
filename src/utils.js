@@ -22,11 +22,13 @@ export const getHtmlFileName = (urlString) => {
   return newPath;
 };
 
-export const getResourceFileName = (urlString, format) => {
+// export const getResourceFileName = (urlString, format) => {
+export const getResourceFileName = (urlString) => {
   const tempPath = urlString.split('://')[1];
-  const { dir, name } = path.parse(tempPath);
+  const { dir, name, ext } = path.parse(tempPath);
+  // console.log(name);
   const formattedPath = `${dir}/${name}`;
-  const newPath = `${formattedPath.replace(/[^a-zA-ZА-Яа-я0-9]/g, '-')}.${format}`;
+  const newPath = `${formattedPath.replace(/[^a-zA-ZА-Яа-я0-9]/g, '-')}${ext}`;
   return newPath;
 };
 
@@ -60,25 +62,24 @@ export const createResourceDirectory = (resourceFilesDirectoryPath) => (
 
 export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath, $, myUrl) => {
   const map = {
-    images: ['src', 'png'],
-    styles: ['href', 'css'],
-    scripts: ['src', 'js'],
+    images: ['src'],
+    styles: ['href'],
+    scripts: ['src'],
   };
 
-  const [attribute, ext] = map[type];
+  // const [attribute, ext] = map[type];
+  const [attribute] = map[type];
   const base = myUrl.origin;
   const promises = links.map(function () {
     const link = $(this).attr(attribute);
     if (link) {
-      if (!isValidUrl(link)) {
+      if (!isValidUrl(link) || ((new URL(link)).origin === base)) {
         const { href } = new URL(link, base);
-        const fullResourceName = getResourceFileName(href, ext);
+        const fullResourceName = getResourceFileName(href);
         // console.log(fullResourceName);
         return downLoadResource(href, path.resolve(resourceFilesDirectoryPath, fullResourceName))
           .then(() => {
-            console.log(fullResourceName);
-            const { dir, name } = path.parse(resourceFilesDirectoryPath)
-            console.log(name);
+            const { name } = path.parse(resourceFilesDirectoryPath);
             $(this).attr(attribute, `${name}/${fullResourceName}`);
           })
           .catch(() => console.log('some error again'));

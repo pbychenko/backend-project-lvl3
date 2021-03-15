@@ -31,12 +31,13 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   }
 
   // fsp.access(outputPath, constants.W_OK).catch((er) => { throw er });
-  try {
-    fs.accessSync(outputPath, constants.W_OK);
-    console.log('can read/write');
-  } catch (err) {
-   throw err;
-  }
+  fs.accessSync(outputPath, constants.W_OK);
+  // try {
+  //   fs.accessSync(outputPath, constants.W_OK);
+  //   console.log('can read/write');
+  // } catch (err) {
+  //  throw err;
+  // }
 
   const resourceFilesDirectoryName = getResourceFilesDirectoryName(url);
   const htmlFileName = getHtmlFileName(url);

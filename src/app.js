@@ -15,7 +15,11 @@ const runApp = () => {
     .option('-out, --output [path]', 'Download path', 'process.cwd()')
     .arguments('<url>')
     .action((url) => {
-      console.log(pageLoader(url, commander.output));
+      const result = pageLoader(url, commander.output)
+      .catch((er) => {
+        throw er;
+      })
+      console.log(result);
     })
     .parse(process.argv);
 };

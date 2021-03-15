@@ -81,7 +81,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     .then(($) => {
       // console.log('her12e');
       fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`);
-      fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${data}`);
+      fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
     })
     .catch((er) => {
       console.error(er);

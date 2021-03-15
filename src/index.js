@@ -51,14 +51,14 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     //   return editResourcePathesInHtml(scriptLinks, 'scripts', resourceFilesDirectory, $, myUrl);
     // })
     .then(($) => {
-      console.log('can');
-      const canonicalElement = $('link[rel="canonical"]');
-      if (canonicalElement)  {
-        const link = canonicalElement.attr('href');
-        if (link) {
-          canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
-        }
-      }
+      // console.log('can');
+      // const canonicalElement = $('link[rel="canonical"]');
+      // if (canonicalElement)  {
+      //   const link = canonicalElement.attr('href');
+      //   if (link) {
+      //     canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
+      //   }
+      // }
       
       // console.log(link);
 

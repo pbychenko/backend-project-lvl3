@@ -1,6 +1,7 @@
 import commander from 'commander';
 // import debug from 'debug';
 import pageLoader from './index.js';
+import fs, { constants } from 'fs';
 
 // const logPageLoader = debug(pageLoader);
 
@@ -17,7 +18,8 @@ const runApp = () => {
     .option('-out, --output [path]', 'Download path', defaultPath)
     .arguments('<url>')
     .action((url) => {
-      pageLoader(url, commander.output)
+      fs.accessSync(commander.output, constants.W_OK);
+      return pageLoader(url, commander.output)
       .then(() => {
         console.log('all ok');
         console.log(url, commander.output);

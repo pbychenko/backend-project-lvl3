@@ -61,7 +61,6 @@ export const createResourceDirectory = (resourceFilesDirectoryPath) => (
     })
 );
 
-
 export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath, $, myUrl) => {
   const map = {
     images: ['src'],

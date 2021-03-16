@@ -28,7 +28,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   }
 
   // fsp.access(outputPath, constants.W_OK).catch((er) => { throw er });
-  fs.accessSync(outputPath);
+  // fs.accessSync(outputPath);
   // try {
   //   fs.accessSync(outputPath, constants.W_OK);
   //   console.log('can read/write');
@@ -70,11 +70,10 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     .then(($) => {
       // console.log('can');
       const canonicalElement = $('link[rel="canonical"]');
-      if (canonicalElement)  {
+      if (canonicalElement) {
         const link = canonicalElement.attr('href');
         if (link) {
           canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
-          // fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${$.html()}`);
         }
       }
       
@@ -97,10 +96,8 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
     })
     .catch((er) => {
-      // console.error('xnj xnj yt nfr');
       throw er;
-      // process.exit(1);
-    })      
+    })
 };
 
 export default pageLoader;

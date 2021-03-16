@@ -20,6 +20,8 @@ import {
 const defaultDirectory = process.cwd();
 
 const pageLoader = (url, outputPath = defaultDirectory) => {
+  console.log(url);
+  console.log(path);
   if (!isValidUrl(url)) {
     throw new Error('invalid url');
     // console.error('Please input correct url');
@@ -29,12 +31,12 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
 
   // fsp.access(outputPath, constants.W_OK).catch((er) => { throw er });
   // fs.accessSync(outputPath);
-  // try {
-  //   fs.accessSync(outputPath, constants.W_OK);
-  //   console.log('can read/write');
-  // } catch (err) {
-  //  throw err;
-  // }
+  try {
+    fs.accessSync(outputPath, constants.W_OK);
+    console.log('can read/write');
+  } catch (err) {
+   throw new Error('cant access');
+  }
 
   const resourceFilesDirectoryName = getResourceFilesDirectoryName(url);
   const htmlFileName = getHtmlFileName(url);
@@ -47,7 +49,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     script: 'scripts',
   };
   let initHtml;
-  
+
   return createResourceDirectory(resourceFilesDirectory)
     // .catch((er) => {throw er})
     .then(() => axios.get(url))
@@ -97,7 +99,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     })
     .catch((er) => {
       throw er;
-    })
+    });
 };
 
 export default pageLoader;

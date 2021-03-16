@@ -23,7 +23,7 @@ const runApp = () => {
         // process.exit();
       })
       .catch((er) => {
-        console.error(er.message);
+        // console.error(er.message);
         // throw er;
         process.exit(1);        
       })

@@ -31,12 +31,12 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
 
   // fsp.access(outputPath, constants.W_OK).catch((er) => { throw er });
   // fs.accessSync(outputPath);
-  try {
-    fs.accessSync(outputPath);
-    console.log('can read/write');
-  } catch (err) {
-    throw new Error('cant access');
-  }
+  // try {
+  //   fs.accessSync(outputPath);
+  //   console.log('can read/write');
+  // } catch (err) {
+  //   throw new Error('cant access');
+  // }
 
   const resourceFilesDirectoryName = getResourceFilesDirectoryName(url);
   const htmlFileName = getHtmlFileName(url);
@@ -96,10 +96,10 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       // console.log('her12e');
       fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`);
       fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
-    })
-    .catch((er) => {
-      throw er;
     });
+    // .catch((er) => {
+    //   throw er;
+    // });
 };
 
 export default pageLoader;

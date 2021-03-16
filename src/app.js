@@ -17,14 +17,16 @@ const runApp = () => {
     .option('-out, --output [path]', 'Download path', defaultPath)
     .arguments('<url>')
     .action((url) => {
-      return pageLoader(url, commander.output)
+      pageLoader(url, commander.output)
       .then(() => {
         console.log('all ok');
+        console.log(url, commander.output);
         // process.exit();
       })
       .catch((er) => {
         // console.error(er.message);
         // throw er;
+        console.error('tut');
         process.exit(1);        
       })
       // console.log(result);

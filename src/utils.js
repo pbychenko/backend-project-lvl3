@@ -49,14 +49,15 @@ export const downLoadResource = (resourcePath, downLoadPath) => {
     });
 };
 
-export const createResourceDirectory = (resourceFilesDirectoryPath) => (
-  // fsp.access(outputPath, constants.W_OK)
-  fsp.mkdir(resourceFilesDirectoryPath)
+export const createResourceDirectory = (outputPath, resourceFilesDirectoryPath) => (
+  fsp.access(outputPath)
+    .then(() => fsp.mkdir(resourceFilesDirectoryPath))
     .then((dir) => dir)
     .catch((er) => {
       console.error(er.message);
       // console.log('huy')
-      throw er;
+      // throw er;
+      throw new Error(er);
       // process.exit(er.errno);
     })
 );

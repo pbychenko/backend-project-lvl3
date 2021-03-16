@@ -1,7 +1,6 @@
 import commander from 'commander';
 // import debug from 'debug';
 import pageLoader from './index.js';
-import fs, { constants } from 'fs';
 
 // const logPageLoader = debug(pageLoader);
 
@@ -18,11 +17,11 @@ const runApp = () => {
     .option('-out, --output [path]', 'Download path', defaultPath)
     .arguments('<url>')
     .action((url) => {
-      fs.accessSync(commander.output, constants.W_OK);
       return pageLoader(url, commander.output)
       .then(() => {
         console.log('all ok');
-        console.log(url, commander.output);
+        console.log(url);
+        console.log(commander.output);
         // process.exit();
       })
       .catch((er) => {
@@ -35,6 +34,5 @@ const runApp = () => {
     })
     .parse(process.argv);
 };
-
 
 export default runApp;

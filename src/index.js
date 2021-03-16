@@ -50,7 +50,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   };
   let initHtml;
 
-  return createResourceDirectory(resourceFilesDirectory)
+  return createResourceDirectory(outputPath, resourceFilesDirectory)
     // .catch((er) => {throw er})
     .then(() => axios.get(url))
     .then(({ data }) => {

@@ -27,11 +27,11 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     throw new Error('invalid url');
     // console.error('Please input correct url');
     // process.exit();
-    // throw new Error('invalid url');    
+    // throw new Error('invalid url');
   }
 
   // fsp.access(outputPath, constants.W_OK).catch((er) => { throw er });
-  fs.accessSync(outputPath, constants.W_OK);
+  fs.accessSync(outputPath, constants.W_OK | constants.R_OK);
   // try {
   //   fs.accessSync(outputPath, constants.W_OK);
   //   console.log('can read/write');

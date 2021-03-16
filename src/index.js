@@ -1,9 +1,6 @@
 import path from 'path';
 // import { promises as fsp } from 'fs';
-import fs, {constants as constants, promises as fsp } from 'fs';
-
-
-
+import fs, { constants, promises as fsp } from 'fs';
 
 import axios from 'axios';
 import cheerio from 'cheerio';
@@ -31,7 +28,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   }
 
   // fsp.access(outputPath, constants.W_OK).catch((er) => { throw er });
-  fs.accessSync(outputPath, constants.W_OK | constants.R_OK);
+  fs.accessSync(outputPath);
   // try {
   //   fs.accessSync(outputPath, constants.W_OK);
   //   console.log('can read/write');
@@ -100,7 +97,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
     })
     .catch((er) => {
-      console.error('xnj xnj yt nfr');
+      // console.error('xnj xnj yt nfr');
       throw er;
       // process.exit(1);
     })      

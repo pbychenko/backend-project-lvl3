@@ -91,7 +91,10 @@ export const downloadResources = (links, resourceFilesDirectoryPath, myUrl) => {
         const { href } = new URL(link, base);
         const fullResourceName = generateResourceFileName(href);
         return downLoadResource(href, path.resolve(resourceFilesDirectoryPath, fullResourceName))
-          .catch((er) => console.log(er.message));
+          .catch((er) => {
+            // console.log(er.message)
+            throw er;
+          });
       }
     }
     return null;

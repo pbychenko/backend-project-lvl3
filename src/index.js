@@ -41,11 +41,10 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   return axios.get(url)
     .then(({ data }) => {
       initHtml = data;
-      return cheerio.load(data);
+      return cheerio.load(data, { xml: true }, false);
     })
     .then(($) => {
-      const canonicalElement = $('link').find('[rel="canonical"]');
-      console.log(canonicalElement.length);
+      const canonicalElement = $('head').find('link[rel="canonical"]');
       if (canonicalElement.length > 0) {
         canonicalPresent = true;
         const link = canonicalElement.attr('href');
@@ -66,7 +65,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     .then(($) => fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`))
     .then(() => createResourceDirectory(outputPath, resourceFilesDirectoryPath))
     .then(() => {
-      console.log(canonicalPresent);
+      // console.log(canonicalPresent);
       if (canonicalPresent) {
         return fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
       }

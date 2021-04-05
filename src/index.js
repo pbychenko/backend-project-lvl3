@@ -41,10 +41,11 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   return axios.get(url)
     .then(({ data }) => {
       initHtml = data;
-      return cheerio.load(data, { xml: true }, false);
+      return cheerio.load(data, { xml: true });
     })
     .then(($) => {
-      const canonicalElement = $('head').find('link[rel="canonical"]');
+      const canonicalElement = $('meta').find('link[rel="canonical"]');
+      // console.log(canonicalElement);
       if (canonicalElement.length > 0) {
         canonicalPresent = true;
         const link = canonicalElement.attr('href');
@@ -53,24 +54,25 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
           canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
         }
       }
+      const t = cheerio.load($.html());
 
       Object.entries(resourceTypeSelectorMap).forEach(([type, selector]) => {
         editResourcePathesInHtml(
-          selector, type, resourceFilesDirectoryPath, $, myUrl, originalResourcesUrls,
+          selector, type, resourceFilesDirectoryPath, t, myUrl, originalResourcesUrls,
         );
       });
 
-      return $;
+      return t;
     })
     .then(($) => fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`))
     .then(() => createResourceDirectory(outputPath, resourceFilesDirectoryPath))
     .then(() => {
       // console.log(canonicalPresent);
-      if (canonicalPresent) {
+      // if (canonicalPresent) {
         return fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
-      }
+      // }
 
-      return null;
+      // return null;
     })
     .then(() => {
       const tasks = Object.keys(resourceTypeSelectorMap).map((type) => (

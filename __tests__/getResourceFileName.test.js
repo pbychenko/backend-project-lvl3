@@ -12,6 +12,7 @@ describe('Check resource files name generation', () => {
     const jpgImgUrl = 'https://testurl.com/public/pictures/logo.jpg';
     // const result = getResourceFileName(pngImgUrl, 'png');
     const result = getResourceFileName(jpgImgUrl);
+
     expect(result).toBe('testurl-com-public-pictures-logo.jpg');
   });
 
@@ -19,6 +20,14 @@ describe('Check resource files name generation', () => {
     const cssUrl = 'https://testurl.com/public/styles.css';
     // const result = getResourceFileName(cssUrl, 'css');
     const result = getResourceFileName(cssUrl);
+
     expect(result).toBe('testurl-com-public-styles.css');
+  });
+
+  test('check url ended on .js', async () => {
+    const jsUrl = 'https://testurl.com/public/script.js';
+    const result = getResourceFileName(jsUrl);
+
+    expect(result).toBe('testurl-com-public-script.js');
   });
 });

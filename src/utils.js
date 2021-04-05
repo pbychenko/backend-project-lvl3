@@ -60,7 +60,7 @@ export const createResourceDirectory = (outputPath, resourceFilesDirectoryPath) 
     })
 );
 
-export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath, $, myUrl) => {
+export const editResourcePathesInHtml = (selector, type, directoryPath, $, myUrl, originalUrls) => {
   const map = {
     images: ['src'],
     styles: ['href'],
@@ -69,15 +69,17 @@ export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath
 
   const [attribute] = map[type];
   const base = myUrl.origin;
+  const links = $(selector);
 
   links.each(function () {
     const link = $(this).attr(attribute);
     if (link) {
       if (!isValidUrl(link) || ((new URL(link)).origin === base)) {
         const { href } = new URL(link, base);
+        originalUrls[type].push(href);
         const fullResourceName = getResourceFileName(href);
         // console.log(fullResourceName);
-        const { name } = path.parse(resourceFilesDirectoryPath);
+        const { name } = path.parse(directoryPath);
 
         $(this).attr(attribute, `${name}/${fullResourceName}`);
       }
@@ -85,30 +87,19 @@ export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath
   });
 };
 
-export const downloadResourcesByType = (links, type, resourceFilesDirectoryPath, $, myUrl) => {
-  const map = {
-    images: ['src'],
-    styles: ['href'],
-    scripts: ['src'],
-  };
-
-  // const [attribute, ext] = map[type];
-  const [attribute] = map[type];
+export const downloadResources = (links, resourceFilesDirectoryPath, myUrl) => {
   const base = myUrl.origin;
-  const promises = links.map(function () {
-    const link = $(this).attr(attribute);
+  const promises = links.map((link) => {
     if (link) {
       if (!isValidUrl(link) || ((new URL(link)).origin === base)) {
         const { href } = new URL(link, base);
         const fullResourceName = getResourceFileName(href);
-        console.log(href)
-        // console.log(fullResourceName);
         return downLoadResource(href, path.resolve(resourceFilesDirectoryPath, fullResourceName))
           .catch((er) => console.log(er.message));
       }
     }
-  }).toArray();
+  });
 
-  const promise = Promise.all(promises).then(() => $);
+  const promise = Promise.all(promises);
   return promise;
 };

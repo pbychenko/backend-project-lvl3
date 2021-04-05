@@ -21,15 +21,6 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     // process.exit();
   }
 
-  // fsp.access(outputPath, constants.W_OK).catch((er) => { throw er });
-  // fs.accessSync(outputPath);
-  // try {
-  //   fs.accessSync(outputPath);
-  //   console.log('can read/write');
-  // } catch (err) {
-  //   throw new Error('cant access');
-  // }
-
   const resourceFilesDirectoryName = generateResourceFilesDirectoryName(url);
   const htmlFileName = generateHtmlFileName(url);
   const myUrl = new URL(url);
@@ -45,6 +36,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     scripts: [],
   };
   let initHtml;
+  let canonicalPresent = false;
 
   return axios.get(url)
     .then(({ data }) => {
@@ -52,11 +44,12 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       return cheerio.load(data);
     })
     .then(($) => {
-      // console.log('hui')
-      // console.log($);
-      const canonicalElement = $('link[rel="canonical"]');
-      if (canonicalElement) {
+      const canonicalElement = $('link').find('[rel="canonical"]');
+      console.log(canonicalElement.length);
+      if (canonicalElement.length > 0) {
+        canonicalPresent = true;
         const link = canonicalElement.attr('href');
+
         if (link) {
           canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
         }
@@ -72,7 +65,14 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     })
     .then(($) => fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`))
     .then(() => createResourceDirectory(outputPath, resourceFilesDirectoryPath))
-    .then(() => fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`))
+    .then(() => {
+      console.log(canonicalPresent);
+      if (canonicalPresent) {
+        return fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
+      }
+
+      return null;
+    })
     .then(() => {
       const tasks = Object.keys(resourceTypeSelectorMap).map((type) => (
         {

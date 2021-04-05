@@ -22,8 +22,7 @@ export const generateHtmlFileName = (urlString) => {
   return newPath;
 };
 
-// export const getResourceFileName = (urlString, format) => {
-export const getResourceFileName = (urlString) => {
+export const generateResourceFileName = (urlString) => {
   const tempPath = urlString.split('://')[1];
   const { dir, name, ext } = path.parse(tempPath);
   // console.log(name);
@@ -53,7 +52,6 @@ export const createResourceDirectory = (outputPath, resourceFilesDirectoryPath) 
     .then(() => fsp.mkdir(resourceFilesDirectoryPath))
     .catch((er) => {
       console.error(er.message);
-      // console.log('huy')
       throw er;
       // throw new Error('Directory ca');
       // process.exit(er.errno);
@@ -73,16 +71,14 @@ export const editResourcePathesInHtml = (selector, type, directoryPath, $, myUrl
 
   links.each(function () {
     const link = $(this).attr(attribute);
-    if (link) {
-      if (!isValidUrl(link) || ((new URL(link)).origin === base)) {
-        const { href } = new URL(link, base);
-        originalUrls[type].push(href);
-        const fullResourceName = getResourceFileName(href);
-        // console.log(fullResourceName);
-        const { name } = path.parse(directoryPath);
+    if (link && (!isValidUrl(link) || ((new URL(link)).origin === base))) {
+      const { href } = new URL(link, base);
+      originalUrls[type].push(href);
+      const fullResourceName = generateResourceFileName(href);
+      // console.log(fullResourceName);
+      const { name } = path.parse(directoryPath);
 
-        $(this).attr(attribute, `${name}/${fullResourceName}`);
-      }
+      $(this).attr(attribute, `${name}/${fullResourceName}`);
     }
   });
 };
@@ -93,11 +89,12 @@ export const downloadResources = (links, resourceFilesDirectoryPath, myUrl) => {
     if (link) {
       if (!isValidUrl(link) || ((new URL(link)).origin === base)) {
         const { href } = new URL(link, base);
-        const fullResourceName = getResourceFileName(href);
+        const fullResourceName = generateResourceFileName(href);
         return downLoadResource(href, path.resolve(resourceFilesDirectoryPath, fullResourceName))
           .catch((er) => console.log(er.message));
       }
     }
+    return null;
   });
 
   const promise = Promise.all(promises);

@@ -1,6 +1,6 @@
 import path from 'path';
-// import { promises as fsp } from 'fs';
-import fs, { constants, promises as fsp } from 'fs';
+import { promises as fsp } from 'fs';
+// import { constants, promises as fsp } from 'fs';
 
 import axios from 'axios';
 import cheerio from 'cheerio';
@@ -8,12 +8,12 @@ import Listr from 'listr';
 // import url from 'url';
 
 import {
-  getResourceFilesDirectoryName,
+  generateResourceFilesDirectoryName,
   generateHtmlFileName,
   isValidUrl,
   // getResourceFileName,
   // downLoadResource,
-  createResourceDirectory, editResourcePathesInHtml,
+  createResourceDirectory, editResourcePathesInHtml, downloadResourcesByType,
 } from './utils.js';
 
 const defaultDirectory = process.cwd();
@@ -33,10 +33,10 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   //   throw new Error('cant access');
   // }
 
-  const resourceFilesDirectoryName = getResourceFilesDirectoryName(url);
+  const resourceFilesDirectoryName = generateResourceFilesDirectoryName(url);
   const htmlFileName = generateHtmlFileName(url);
   const myUrl = new URL(url);
-  const resourceFilesDirectory = path.join(outputPath, resourceFilesDirectoryName);
+  const resourceFilesDirectoryPath = path.join(outputPath, resourceFilesDirectoryName);
   const locs = ['img', 'link[rel="stylesheet"]', 'script'];
   const map = {
     img: 'images',
@@ -44,28 +44,65 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     script: 'scripts',
   };
   let initHtml;
+  let cheerioObj;
+  let cheerioObjCopy;
 
-  return createResourceDirectory(outputPath, resourceFilesDirectory)
-    // .catch((er) => {throw er})
-    .then(() => axios.get(url))
+  // return createResourceDirectory(outputPath, resourceFilesDirectory)
+  //   .then(() => axios.get(url))
+  //   .then(({ data }) => {
+  //     initHtml = data;
+  //     return cheerio.load(data);
+  //   })
+  //   // .then(($) => {
+  //   //   const imageLinks = $('img');
+  //   //   return editResourcePathesInHtml(imageLinks, 'images', resourceFilesDirectory, $, myUrl);
+  //   // })
+  //   // .then(($) => {
+  //   //   const stylesLinks = $('link[rel="stylesheet"]');
+  //   //   return editResourcePathesInHtml(stylesLinks, 'styles', resourceFilesDirectory, $, myUrl);
+  //   // })
+  //   // .then(($) => {
+  //   //   const scriptLinks = $('script');
+  //   //   return editResourcePathesInHtml(scriptLinks, 'scripts', resourceFilesDirectory, $, myUrl);
+  //   // })
+  //   .then(($) => {
+  //     // console.log('can');
+  //     const canonicalElement = $('link[rel="canonical"]');
+  //     if (canonicalElement) {
+  //       const link = canonicalElement.attr('href');
+  //       if (link) {
+  //         canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
+  //       }
+  //     }
+
+  //     const tasks = locs.map((loc) => (
+  //       {
+  //         title: `Download ${loc}`,
+  //         task: () => {
+  //           const links = $(loc);
+  //           return editResourcePathesInHtml(links, map[loc], resourceFilesDirectory, $, myUrl);
+  //         },
+  //       }));
+  //     const listr = new Listr(tasks, { concurrent: true });
+  //     return listr.run().then(() => $);
+  //   })
+  //   .then(($) => {
+  //     // console.log('her12e');
+  //     fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`);
+  //     fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
+  //   });
+  return axios.get(url)
     .then(({ data }) => {
       initHtml = data;
+      // cheerioObj = cheerio.load(data);
+      // console.log(cheerioObj);
+      
+      // console.log('hui');
+      // console.log(cheerioObj);
       return cheerio.load(data);
     })
-    // .then(($) => {
-    //   const imageLinks = $('img');
-    //   return editResourcePathesInHtml(imageLinks, 'images', resourceFilesDirectory, $, myUrl);
-    // })
-    // .then(($) => {
-    //   const stylesLinks = $('link[rel="stylesheet"]');
-    //   return editResourcePathesInHtml(stylesLinks, 'styles', resourceFilesDirectory, $, myUrl);
-    // })
-    // .then(($) => {
-    //   const scriptLinks = $('script');
-    //   return editResourcePathesInHtml(scriptLinks, 'scripts', resourceFilesDirectory, $, myUrl);
-    // })
     .then(($) => {
-      // console.log('can');
+      cheerioObjCopy = $;
       const canonicalElement = $('link[rel="canonical"]');
       if (canonicalElement) {
         const link = canonicalElement.attr('href');
@@ -73,28 +110,29 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
           canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
         }
       }
-      
-      // console.log(link);
 
+      locs.forEach((loc) => {
+        const links = $(loc);
+        editResourcePathesInHtml(links, map[loc], resourceFilesDirectoryPath, $, myUrl);
+      });
+
+      return $;
+    })
+    .then(($) => fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`))
+    .then(() => createResourceDirectory(outputPath, resourceFilesDirectoryPath))
+    .then(() => fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`))
+    .then(() => {
       const tasks = locs.map((loc) => (
         {
-          title: `Download ${loc}`,
+          title: `Download ${map[loc]}`,
           task: () => {
-            const links = $(loc);
-            return editResourcePathesInHtml(links, map[loc], resourceFilesDirectory, $, myUrl);
+            const links = cheerioObjCopy(loc);
+            return downloadResourcesByType(links, map[loc], resourceFilesDirectoryPath, cheerioObjCopy, myUrl);
           },
         }));
       const listr = new Listr(tasks, { concurrent: true });
-      return listr.run().then(() => $);
-    })
-    .then(($) => {
-      // console.log('her12e');
-      fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`);
-      fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
+      return listr.run();
     });
-    // .catch((er) => {
-    //   throw er;
-    // });
 };
 
 export default pageLoader;

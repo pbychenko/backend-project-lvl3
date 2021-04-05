@@ -12,9 +12,9 @@ export const isValidUrl = (url) => {
   }
 };
 
-export const getResourceFilesDirectoryName = (urlString) => {
-  const filesDirectory = `${formatUrl(urlString)}_files`;
-  return filesDirectory;
+export const generateResourceFilesDirectoryName = (urlString) => {
+  const resourceFilesDirectoryName = `${formatUrl(urlString)}_files`;
+  return resourceFilesDirectoryName;
 };
 
 export const generateHtmlFileName = (urlString) => {
@@ -41,7 +41,6 @@ export const downLoadResource = (resourcePath, downLoadPath) => {
     responseType: 'stream',
   })
     .then((response) => response.data.pipe(writer))
-    .then(() => downLoadPath)
     .catch((er) => {
       console.error('file cant be downloaded');
       throw er;
@@ -52,17 +51,41 @@ export const downLoadResource = (resourcePath, downLoadPath) => {
 export const createResourceDirectory = (outputPath, resourceFilesDirectoryPath) => (
   fsp.access(outputPath)
     .then(() => fsp.mkdir(resourceFilesDirectoryPath))
-    .then((dir) => dir)
     .catch((er) => {
       console.error(er.message);
       // console.log('huy')
-      // throw er;
-      throw new Error(er);
+      throw er;
+      // throw new Error('Directory ca');
       // process.exit(er.errno);
     })
 );
 
 export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath, $, myUrl) => {
+  const map = {
+    images: ['src'],
+    styles: ['href'],
+    scripts: ['src'],
+  };
+
+  const [attribute] = map[type];
+  const base = myUrl.origin;
+
+  links.each(function () {
+    const link = $(this).attr(attribute);
+    if (link) {
+      if (!isValidUrl(link) || ((new URL(link)).origin === base)) {
+        const { href } = new URL(link, base);
+        const fullResourceName = getResourceFileName(href);
+        // console.log(fullResourceName);
+        const { name } = path.parse(resourceFilesDirectoryPath);
+
+        $(this).attr(attribute, `${name}/${fullResourceName}`);
+      }
+    }
+  });
+};
+
+export const downloadResourcesByType = (links, type, resourceFilesDirectoryPath, $, myUrl) => {
   const map = {
     images: ['src'],
     styles: ['href'],
@@ -78,13 +101,10 @@ export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath
       if (!isValidUrl(link) || ((new URL(link)).origin === base)) {
         const { href } = new URL(link, base);
         const fullResourceName = getResourceFileName(href);
+        console.log(href)
         // console.log(fullResourceName);
         return downLoadResource(href, path.resolve(resourceFilesDirectoryPath, fullResourceName))
-          .then(() => {
-            const { name } = path.parse(resourceFilesDirectoryPath);
-            $(this).attr(attribute, `${name}/${fullResourceName}`);
-          })
-          .catch(() => console.log('some error again'));
+          .catch((er) => console.log(er.message));
       }
     }
   }).toArray();

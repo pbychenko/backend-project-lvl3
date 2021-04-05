@@ -17,7 +17,7 @@ export const getResourceFilesDirectoryName = (urlString) => {
   return filesDirectory;
 };
 
-export const getHtmlFileName = (urlString) => {
+export const generateHtmlFileName = (urlString) => {
   const newPath = `${formatUrl(urlString)}.html`;
   return newPath;
 };

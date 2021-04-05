@@ -1,8 +1,7 @@
 install: 
 	npm install
 
-start: 
-	# npx src/bin/page-loader.js
+start:
 	node src/bin/page-loader.js
 
 publish: 

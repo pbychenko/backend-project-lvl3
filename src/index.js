@@ -9,24 +9,19 @@ import Listr from 'listr';
 
 import {
   getResourceFilesDirectoryName,
-  getHtmlFileName,
+  generateHtmlFileName,
   isValidUrl,
   // getResourceFileName,
   // downLoadResource,
   createResourceDirectory, editResourcePathesInHtml,
 } from './utils.js';
-// import { error } from 'console';
 
 const defaultDirectory = process.cwd();
 
 const pageLoader = (url, outputPath = defaultDirectory) => {
-  console.log(url);
-  console.log(outputPath);
   if (!isValidUrl(url)) {
     throw new Error('invalid url');
-    // console.error('Please input correct url');
     // process.exit();
-    // throw new Error('invalid url');
   }
 
   // fsp.access(outputPath, constants.W_OK).catch((er) => { throw er });
@@ -39,7 +34,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   // }
 
   const resourceFilesDirectoryName = getResourceFilesDirectoryName(url);
-  const htmlFileName = getHtmlFileName(url);
+  const htmlFileName = generateHtmlFileName(url);
   const myUrl = new URL(url);
   const resourceFilesDirectory = path.join(outputPath, resourceFilesDirectoryName);
   const locs = ['img', 'link[rel="stylesheet"]', 'script'];

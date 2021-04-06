@@ -25,6 +25,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     accessSync(outputPath, constants.R_OK | constants.W_OK);
   } catch {
     console.error('cannot access');
+    console.log(outputPath);
     throw new Error('directory is bad');
   }
 

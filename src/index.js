@@ -53,7 +53,9 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   let canonicalPresent = false;
 
   return axios.get(url)
-    .then(({ data }) => {
+    .then(({ data, status }) => {
+      console.log('in');
+      console.log(status)
       initHtml = data;
       return cheerio.load(data);
     })

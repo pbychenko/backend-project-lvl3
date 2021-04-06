@@ -38,7 +38,13 @@ const runApp = () => {
         console.error(er.message);
         process.exit(1);
       }))
-    .parse(process.argv);
+    .parse(process.argv)
+    .catch((er) => {
+      // console.error(er.message);
+      // throw er;
+      console.error(er.message);
+      process.exit(1);
+    });
 };
 
 export default runApp;

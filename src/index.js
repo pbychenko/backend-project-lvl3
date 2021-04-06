@@ -21,13 +21,13 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     // process.exit();
   }
  
-  try {
-    accessSync(outputPath, constants.R_OK | constants.W_OK);
-  } catch {
-    console.error('cannot access');
-    console.log(outputPath);
-    throw new Error('directory is bad');
-  }
+  // try {
+  //   accessSync(outputPath, constants.R_OK | constants.W_OK);
+  // } catch {
+  //   console.error('cannot access');
+  //   console.log(outputPath);
+  //   throw new Error('directory is bad');
+  // }
 
   const resourceFilesDirectoryName = generateResourceFilesDirectoryName(url);
   const htmlFileName = generateHtmlFileName(url);
@@ -78,7 +78,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       return $;
     })
     .then(($) => fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`))
-    .then(() => createResourceDirectory(resourceFilesDirectoryPath))
+    .then(() => createResourceDirectory(outputPath, resourceFilesDirectoryPath))
     .then(() => {
       // console.log(canonicalPresent);
       if (canonicalPresent) {

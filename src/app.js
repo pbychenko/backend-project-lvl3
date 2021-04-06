@@ -1,10 +1,11 @@
 import commander from 'commander';
 // import debug from 'debug';
 import pageLoader from './index.js';
+// import { accessSync, constants, promises as fsp } from 'fs';
 
 // const logPageLoader = debug(pageLoader);
 
-// process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 const defaultPath = process.cwd();
 // console.log(defaultPath);
 
@@ -37,14 +38,13 @@ const runApp = () => {
         // throw er;
         console.error(er.message);
         process.exit(1);
-      }))
-    .parse(process.argv)
-    .catch((er) => {
-      // console.error(er.message);
-      // throw er;
-      console.error(er.message);
-      process.exit(1);
-    });
+      }));
+  try {
+    commander.parse(process.argv);
+  } catch (err) {
+    console.error(err.message);
+    process.exit(1);
+  }
 };
 
 export default runApp;

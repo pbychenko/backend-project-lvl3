@@ -1,5 +1,5 @@
 import path from 'path';
-import { promises as fsp } from 'fs';
+import { accessSync, constants, promises as fsp } from 'fs';
 // import { constants, promises as fsp } from 'fs';
 import axios from 'axios';
 import cheerio from 'cheerio';
@@ -19,6 +19,13 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   if (!isValidUrl(url)) {
     throw new Error('invalid url');
     // process.exit();
+  }
+ 
+  try {
+    accessSync(outputPath, constants.R_OK | constants.W_OK);
+  } catch {
+    console.error('cannot access');
+    throw new Error('directory is bad');
   }
 
   const resourceFilesDirectoryName = generateResourceFilesDirectoryName(url);
@@ -70,7 +77,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       return $;
     })
     .then(($) => fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`))
-    .then(() => createResourceDirectory(outputPath, resourceFilesDirectoryPath))
+    .then(() => createResourceDirectory(resourceFilesDirectoryPath))
     .then(() => {
       // console.log(canonicalPresent);
       if (canonicalPresent) {

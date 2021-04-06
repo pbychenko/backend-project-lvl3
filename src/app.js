@@ -10,6 +10,13 @@ const defaultPath = process.cwd();
 
 const runApp = () => {
   // const testPath = '/home/pavel/projects/tet';
+  // const testPath = '/sys';
+  // pageLoader('http://www.perumov.club/books/11', testPath)
+  //   .catch((er) => {
+  //     console.error(er.message);
+
+  //     process.exit(1);
+  //   });
   // console.log(pageLoader('http://www.perumov.club/books/11', testPath));
   // console.log(pageLoader('https://ru.hexlet.io', testPath));
   // console.log(pageLoader('https://fc-arsenal.com', testPath));
@@ -31,8 +38,6 @@ const runApp = () => {
         console.error(er.message);
         process.exit(1);
       }))
-      // console.log(result);
-    // )
     .parse(process.argv);
 };
 

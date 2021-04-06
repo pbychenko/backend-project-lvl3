@@ -1,5 +1,5 @@
 import path from 'path';
-import { promises as fsp } from 'fs';
+import { accessSync, constants, promises as fsp } from 'fs';
 // import { constants, promises as fsp } from 'fs';
 import axios from 'axios';
 import cheerio from 'cheerio';
@@ -16,10 +16,24 @@ import {
 const defaultDirectory = process.cwd();
 
 const pageLoader = (url, outputPath = defaultDirectory) => {
+  console.log('for url');
+  console.log(url);
   if (!isValidUrl(url)) {
-    throw new Error('invalid url');
+    // throw new Error('invalid url');
+    return Promise.reject(new Error('invalid url'))
+      .catch((er) => {
+        console.log('in valid URL');
+        throw er;
+      });
     // process.exit();
   }
+  // try {
+  //   accessSync(outputPath, constants.R_OK | constants.W_OK);
+  // } catch {
+  //   console.error('cannot access');
+  //   console.log(outputPath);
+  //   throw new Error('directory is bad');
+  // }
 
   const resourceFilesDirectoryName = generateResourceFilesDirectoryName(url);
   const htmlFileName = generateHtmlFileName(url);
@@ -39,13 +53,22 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   let canonicalPresent = false;
 
   return axios.get(url)
-    .then(({ data }) => {
+    .then(({ data, status }) => {
+      console.log('in');
+      console.log(status);
+      console.log(data)
       initHtml = data;
-      return cheerio.load(data, { xml: true });
+      return cheerio.load(data);
     })
     .then(($) => {
-      const canonicalElement = $('meta').find('link[rel="canonical"]');
-      // console.log(canonicalElement);
+      const canonicalElement = $('head').find('link[rel="canonical"]');
+      // console.log(canonicalElement.length);
+      // const $xml = cheerio.load(initHtml, { xml: true });
+      // const canonicalElementXml = $xml('head').find('link[rel="canonical"]');
+      // const canonicalElement = $('head').find('link[rel="canonical"]');
+      // console.log(canonicalElementXml.length);
+      // console.log(canonicalElement.length);
+
       if (canonicalElement.length > 0) {
         canonicalPresent = true;
         const link = canonicalElement.attr('href');
@@ -84,6 +107,10 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
         }));
       const listr = new Listr(tasks, { concurrent: true });
       return listr.run();
+    })
+    .catch((er) => {
+      console.log('function catch');
+      throw er;
     });
 };
 

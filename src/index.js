@@ -17,10 +17,10 @@ const defaultDirectory = process.cwd();
 
 const pageLoader = (url, outputPath = defaultDirectory) => {
   if (!isValidUrl(url)) {
-    throw new Error('invalid url');
+    // throw new Error('invalid url');
+    return Promise.reject(new Error('invalid url'));
     // process.exit();
   }
- 
   // try {
   //   accessSync(outputPath, constants.R_OK | constants.W_OK);
   // } catch {

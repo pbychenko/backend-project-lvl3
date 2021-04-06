@@ -9,10 +9,11 @@ const defaultPath = process.cwd();
 // console.log(defaultPath);
 
 const runApp = () => {
-  // const testPath = '/home/pavel/hexlet_projects/tet';
+  // const testPath = '/home/pavel/projects/tet';
   // console.log(pageLoader('http://www.perumov.club/books/11', testPath));
-  // console.log(pageLoader('https://ru.hexlet.io/', testPath));
-  // console.log(pageLoader('https://fc-arsenal.com/', testPath));
+  // console.log(pageLoader('https://ru.hexlet.io', testPath));
+  // console.log(pageLoader('https://fc-arsenal.com', testPath));
+  // console.log(pageLoader('https://krisha.kz/', testPath));
   commander.version('0.0.1')
     .description('Some description')
     .option('-out, --output [path]', 'Download path', defaultPath)

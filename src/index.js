@@ -41,10 +41,17 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   return axios.get(url)
     .then(({ data }) => {
       initHtml = data;
-      return cheerio.load(data, { xml: true }, false);
+      return cheerio.load(data);
     })
     .then(($) => {
       const canonicalElement = $('head').find('link[rel="canonical"]');
+      // console.log(canonicalElement.length);
+      // const $xml = cheerio.load(initHtml, { xml: true });
+      // const canonicalElementXml = $xml('head').find('link[rel="canonical"]');
+      // const canonicalElement = $('head').find('link[rel="canonical"]');
+      // console.log(canonicalElementXml.length);
+      // console.log(canonicalElement.length);
+
       if (canonicalElement.length > 0) {
         canonicalPresent = true;
         const link = canonicalElement.attr('href');

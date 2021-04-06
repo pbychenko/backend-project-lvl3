@@ -1,7 +1,8 @@
 import commander from 'commander';
+import { accessSync, constants } from 'fs';
 // import debug from 'debug';
 import pageLoader from './index.js';
-// import { accessSync, constants, promises as fsp } from 'fs';
+// import { accessSync, constants } from 'fs';
 
 // const logPageLoader = debug(pageLoader);
 
@@ -36,15 +37,23 @@ const runApp = () => {
       .catch((er) => {
         // console.error(er.message);
         // throw er;
+        console.log('commander');
         console.error(er.message);
+        console.error(er.code);
+        // if (er.code === 'EACCES') {
+        //   throw er;
+        // }
         process.exit(1);
-      }));
-  try {
-    commander.parse(process.argv);
-  } catch (err) {
-    console.error(err.message);
-    process.exit(1);
-  }
+      }))
+    .parse(process.argv);
+  // try {
+  // //   accessSync(commander.output, constants.R_OK | constants.W_OK);
+  //   commander.parse(process.argv);
+  // } catch (err) {
+  //   // console.log('hui');
+  //   // console.error(err.message);
+  //   throw err;
+  // }
 };
 
 export default runApp;

@@ -16,13 +16,13 @@ import {
 const defaultDirectory = process.cwd();
 
 const pageLoader = (url, outputPath = defaultDirectory) => {
-  console.log('for url');
-  console.log(url);
+  // console.log('for url');
+  // console.log(url);
   if (!isValidUrl(url)) {
     // throw new Error('invalid url');
     return Promise.reject(new Error('invalid url'))
       .catch((er) => {
-        console.log('in valid URL');
+        console.log('invalid URL');
         throw er;
       });
     // process.exit();
@@ -34,7 +34,6 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   //   console.log(outputPath);
   //   throw new Error('directory is bad');
   // }
-
   const resourceFilesDirectoryName = generateResourceFilesDirectoryName(url);
   const htmlFileName = generateHtmlFileName(url);
   const myUrl = new URL(url);
@@ -55,8 +54,8 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   return axios.get(url)
     .then(({ data, status }) => {
       console.log('in');
-      console.log(status);
-      console.log(data)
+      // console.log(status);
+      // console.log(data)
       initHtml = data;
       return cheerio.load(data);
     })
@@ -91,11 +90,11 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     .then(() => createResourceDirectory(outputPath, resourceFilesDirectoryPath))
     .then(() => {
       // console.log(canonicalPresent);
-      // if (canonicalPresent) {
+      if (canonicalPresent) {
         return fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
-      // }
+      }
 
-      // return null;
+      return null;
     })
     .then(() => {
       const tasks = Object.keys(resourceTypeSelectorMap).map((type) => (

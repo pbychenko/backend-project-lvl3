@@ -2,7 +2,7 @@ install:
 	npm install
 
 start:
-	node src/bin/page-loader.js  --output /sys https://ru.hexlet.io/courses
+	node src/bin/page-loader.js
 
 publish: 
 	npm publish --dry-run

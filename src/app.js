@@ -37,13 +37,12 @@ const runApp = () => {
       .catch((er) => {
         // console.error(er.message);
         // throw er;
-        console.log('commander');
+        console.log('commander catch');
         console.error(er.message);
-        console.error(er.code);
         // if (er.code === 'EACCES') {
-        //   throw er;
+          throw er;
         // }
-        process.exit(1);
+        // process.exit(1);
       }))
     .parse(process.argv);
   // try {

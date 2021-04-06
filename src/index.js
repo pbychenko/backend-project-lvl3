@@ -18,7 +18,11 @@ const defaultDirectory = process.cwd();
 const pageLoader = (url, outputPath = defaultDirectory) => {
   if (!isValidUrl(url)) {
     // throw new Error('invalid url');
-    return Promise.reject(new Error('invalid url'));
+    return Promise.reject(new Error('invalid url'))
+      .catch((er) => {
+        console.log('in valid URL');
+        throw er;
+      });
     // process.exit();
   }
   // try {

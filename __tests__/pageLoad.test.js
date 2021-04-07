@@ -31,13 +31,13 @@ describe('Check download html to file', () => {
   //     <img src="/pictures/p1.png" />
   //     </body></html>`;
   //   nock(host).get('/test2/images').reply(200, initialHtml);
-    
-  //   // const { name } = path.parse(resultDirectory);      
+
+  //   // const { name } = path.parse(resultDirectory);
   //   await pageLoader('https://testurl.com/test2/images', resultDirectory);
   //   const expectedHtml = `<html><head></head><body>
   //     <img src="testurl-com-test2-images_files/testurl-com-pictures-p1.png" />
   //     </body></html>`;
-  //   const result = await fsp.readFile(`${resultDirectory}/testurl-com-test2-images.html`, 'utf8');
+  //  const result = await fsp.readFile(`${resultDirectory}/testurl-com-test2-images.html`, 'utf8');
 
   //   expect(result).toBe(expectedHtml);
   // });

@@ -109,12 +109,12 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
         }));
       const listr = new Listr(tasks, { concurrent: true });
       return listr.run();
-    })
-    .catch((er) => {
-      
-      console.log('function catch');
-      throw er;
     });
+    // .catch((er) => {
+      
+    //   console.log('function catch');
+    //   throw er;
+    // });
 };
 
 export default pageLoader;

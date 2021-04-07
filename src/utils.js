@@ -11,9 +11,9 @@ export const isValidUrl = (url) => {
   // } catch {
   //   return false;
   // }
-  if (url.includes('localhost')) {
-    return true;
-  }
+  // if (url.includes('localhost')) {
+  //   return true;
+  // }
   return isURL(url);
 };
 

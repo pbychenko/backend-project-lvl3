@@ -1,29 +1,33 @@
 import path from 'path';
 import axios from 'axios';
-import fs, { constants as constants, promises as fsp } from 'fs';
+import fs, { promises as fsp } from 'fs';
+import isURL from 'validator/lib/isURL.js';
 
 const formatUrl = (url) => url.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-');
 
 export const isValidUrl = (url) => {
-  try {
-    return new URL(url, url) && true;
-  } catch {
-    return false;
+  // try {
+  //   return new URL(url, url) && true;
+  // } catch {
+  //   return false;
+  // }
+  if (url.includes('localhost')) {
+    return true;
   }
+  return isURL(url);
 };
 
-export const getResourceFilesDirectoryName = (urlString) => {
-  const filesDirectory = `${formatUrl(urlString)}_files`;
-  return filesDirectory;
+export const generateResourceFilesDirectoryName = (urlString) => {
+  const resourceFilesDirectoryName = `${formatUrl(urlString)}_files`;
+  return resourceFilesDirectoryName;
 };
 
-export const getHtmlFileName = (urlString) => {
+export const generateHtmlFileName = (urlString) => {
   const newPath = `${formatUrl(urlString)}.html`;
   return newPath;
 };
 
-// export const getResourceFileName = (urlString, format) => {
-export const getResourceFileName = (urlString) => {
+export const generateResourceFileName = (urlString) => {
   const tempPath = urlString.split('://')[1];
   const { dir, name, ext } = path.parse(tempPath);
   // console.log(name);
@@ -41,7 +45,6 @@ export const downLoadResource = (resourcePath, downLoadPath) => {
     responseType: 'stream',
   })
     .then((response) => response.data.pipe(writer))
-    .then(() => downLoadPath)
     .catch((er) => {
       console.error('file cant be downloaded');
       throw er;
@@ -50,45 +53,61 @@ export const downLoadResource = (resourcePath, downLoadPath) => {
 };
 
 export const createResourceDirectory = (outputPath, resourceFilesDirectoryPath) => (
-  fsp.access(outputPath)
-    .then(() => fsp.mkdir(resourceFilesDirectoryPath))
-    .then((dir) => dir)
-    .catch((er) => {
-      console.error(er.message);
-      // console.log('huy')
-      // throw er;
-      throw new Error(er);
-      // process.exit(er.errno);
-    })
+  // fsp.access(outputPath)
+  // .then(() => fsp.mkdir(resourceFilesDirectoryPath))
+  fsp.mkdir(resourceFilesDirectoryPath)
+  // .catch((er) => {
+  //   console.error('ss');
+  //   throw er;
+  //   // throw new Error('Directory ca');
+  //   // process.exit(er.errno);
+  // })
 );
 
-export const editResourcePathesInHtml = (links, type, resourceFilesDirectoryPath, $, myUrl) => {
+export const editResourcePathesInHtml = (selector, type, directoryPath, $, myUrl, originalUrls) => {
   const map = {
     images: ['src'],
     styles: ['href'],
     scripts: ['src'],
   };
 
-  // const [attribute, ext] = map[type];
   const [attribute] = map[type];
   const base = myUrl.origin;
-  const promises = links.map(function () {
+  const links = $(selector);
+
+  links.each(function () {
     const link = $(this).attr(attribute);
+    // console.log(link);
+    // console.log(isValidUrl(link));
+    if (link && (!isValidUrl(link) || ((new URL(link)).origin === base))) {
+      const { href } = new URL(link, base);
+      originalUrls[type].push(href);
+      const fullResourceName = generateResourceFileName(href);
+      // console.log(fullResourceName);
+      const { name } = path.parse(directoryPath);
+
+      $(this).attr(attribute, `${name}/${fullResourceName}`);
+    }
+  });
+};
+
+export const downloadResources = (links, resourceFilesDirectoryPath, myUrl) => {
+  const base = myUrl.origin;
+  const promises = links.map((link) => {
     if (link) {
       if (!isValidUrl(link) || ((new URL(link)).origin === base)) {
         const { href } = new URL(link, base);
-        const fullResourceName = getResourceFileName(href);
-        // console.log(fullResourceName);
+        const fullResourceName = generateResourceFileName(href);
         return downLoadResource(href, path.resolve(resourceFilesDirectoryPath, fullResourceName))
-          .then(() => {
-            const { name } = path.parse(resourceFilesDirectoryPath);
-            $(this).attr(attribute, `${name}/${fullResourceName}`);
-          })
-          .catch(() => console.log('some error again'));
+          .catch((er) => {
+            // console.log(er.message)
+            throw er;
+          });
       }
     }
-  }).toArray();
+    return null;
+  });
 
-  const promise = Promise.all(promises).then(() => $);
+  const promise = Promise.all(promises);
   return promise;
 };

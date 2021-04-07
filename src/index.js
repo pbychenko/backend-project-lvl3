@@ -1,105 +1,100 @@
 import path from 'path';
-// import { promises as fsp } from 'fs';
-import fs, { constants, promises as fsp } from 'fs';
-
+import { promises as fsp } from 'fs';
+// import { constants, promises as fsp } from 'fs';
 import axios from 'axios';
 import cheerio from 'cheerio';
 import Listr from 'listr';
-// import url from 'url';
-
 import {
-  getResourceFilesDirectoryName,
-  getHtmlFileName,
+  generateResourceFilesDirectoryName,
+  generateHtmlFileName,
   isValidUrl,
-  // getResourceFileName,
-  // downLoadResource,
-  createResourceDirectory, editResourcePathesInHtml,
+  createResourceDirectory, editResourcePathesInHtml, downloadResources,
 } from './utils.js';
-// import { error } from 'console';
 
 const defaultDirectory = process.cwd();
 
 const pageLoader = (url, outputPath = defaultDirectory) => {
   console.log(url);
   console.log(outputPath);
+
   if (!isValidUrl(url)) {
-    throw new Error('invalid url');
-    // console.error('Please input correct url');
-    // process.exit();
-    // throw new Error('invalid url');
+    return Promise.reject(new Error('invalid url'));
   }
 
-  // fsp.access(outputPath, constants.W_OK).catch((er) => { throw er });
-  // fs.accessSync(outputPath);
   // try {
-  //   fs.accessSync(outputPath);
+  //   accessSync(outputPath);
   //   console.log('can read/write');
   // } catch (err) {
-  //   throw new Error('cant access');
+  //   return Promise.reject(new Error('err'));
   // }
 
-  const resourceFilesDirectoryName = getResourceFilesDirectoryName(url);
-  const htmlFileName = getHtmlFileName(url);
+  const resourceFilesDirectoryName = generateResourceFilesDirectoryName(url);
+  const htmlFileName = generateHtmlFileName(url);
   const myUrl = new URL(url);
-  const resourceFilesDirectory = path.join(outputPath, resourceFilesDirectoryName);
-  const locs = ['img', 'link[rel="stylesheet"]', 'script'];
-  const map = {
-    img: 'images',
-    'link[rel="stylesheet"]': 'styles',
-    script: 'scripts',
+  const resourceFilesDirectoryPath = path.join(outputPath, resourceFilesDirectoryName);
+  const resourceTypeSelectorMap = {
+    images: 'img',
+    styles: 'link[rel="stylesheet"]',
+    scripts: 'script',
+  };
+  const originalResourcesUrls = {
+    images: [],
+    styles: [],
+    scripts: [],
   };
   let initHtml;
+  let canonicalPresent = false;
 
-  return createResourceDirectory(outputPath, resourceFilesDirectory)
-    // .catch((er) => {throw er})
-    .then(() => axios.get(url))
+  return axios.get(url)
     .then(({ data }) => {
       initHtml = data;
       return cheerio.load(data);
     })
-    // .then(($) => {
-    //   const imageLinks = $('img');
-    //   return editResourcePathesInHtml(imageLinks, 'images', resourceFilesDirectory, $, myUrl);
-    // })
-    // .then(($) => {
-    //   const stylesLinks = $('link[rel="stylesheet"]');
-    //   return editResourcePathesInHtml(stylesLinks, 'styles', resourceFilesDirectory, $, myUrl);
-    // })
-    // .then(($) => {
-    //   const scriptLinks = $('script');
-    //   return editResourcePathesInHtml(scriptLinks, 'scripts', resourceFilesDirectory, $, myUrl);
-    // })
     .then(($) => {
-      // console.log('can');
-      const canonicalElement = $('link[rel="canonical"]');
-      if (canonicalElement) {
+      const canonicalElement = $('head').find('link[rel="canonical"]');
+
+      if (canonicalElement.length > 0) {
+        canonicalPresent = true;
         const link = canonicalElement.attr('href');
+
         if (link) {
           canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
         }
       }
-      
-      // console.log(link);
+      const t = cheerio.load($.html());
 
-      const tasks = locs.map((loc) => (
+      Object.entries(resourceTypeSelectorMap).forEach(([type, selector]) => {
+        editResourcePathesInHtml(
+          selector, type, resourceFilesDirectoryPath, t, myUrl, originalResourcesUrls,
+        );
+      });
+
+      return t;
+    })
+    .then(($) => fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`))
+    .then(() => createResourceDirectory(outputPath, resourceFilesDirectoryPath))
+    .then(() => {
+      if (canonicalPresent) {
+        return fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
+      }
+
+      return null;
+    })
+    .then(() => {
+      const tasks = Object.keys(resourceTypeSelectorMap).map((type) => (
         {
-          title: `Download ${loc}`,
-          task: () => {
-            const links = $(loc);
-            return editResourcePathesInHtml(links, map[loc], resourceFilesDirectory, $, myUrl);
-          },
+          title: `Downloading ${type}`,
+          task: () => (
+            downloadResources(originalResourcesUrls[type], resourceFilesDirectoryPath, myUrl)
+          ),
         }));
       const listr = new Listr(tasks, { concurrent: true });
-      return listr.run().then(() => $);
+      return listr.run();
     })
-    .then(($) => {
-      // console.log('her12e');
-      fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`);
-      fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
+    .catch((er) => {
+      console.log('in func');
+      throw er;
     });
-    // .catch((er) => {
-    //   throw er;
-    // });
 };
 
 export default pageLoader;

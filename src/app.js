@@ -7,7 +7,7 @@ const defaultPath = process.cwd();
 // console.log(defaultPath);
 
 const runApp = () => {
-  const testPath = '/home/pavel/projects/tet';
+  // const testPath = '/home/pavel/projects/tet';
   // const testPath = '/sys';
   // console.log(pageLoader('http://www.perumov.club/books/11', testPath));
   // console.log(pageLoader('https://hexlet.io/', testPath));
@@ -23,9 +23,9 @@ const runApp = () => {
         console.log('commander catch');
         console.error(er.message);
         // if (er.code === 'EACCES') {
-          throw er;
+          // throw er;
         // }
-        // process.exit(1);
+        process.exit(1);
       }))
     .parse(process.argv);
 };

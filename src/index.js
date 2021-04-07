@@ -20,20 +20,14 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   // console.log(url);
   if (!isValidUrl(url)) {
     // throw new Error('invalid url');
-    return Promise.reject(new Error('invalid url'))
-      .catch((er) => {
-        console.log('invalid URL');
-        throw er;
-      });
+    return Promise.reject(new Error('invalid url'));
+      // .catch((er) => {
+      //   console.log('invalid URL');
+      //   throw er;
+      // });
     // process.exit();
   }
-  // try {
-  //   accessSync(outputPath, constants.R_OK | constants.W_OK);
-  // } catch {
-  //   console.error('cannot access');
-  //   console.log(outputPath);
-  //   throw new Error('directory is bad');
-  // }
+
   const resourceFilesDirectoryName = generateResourceFilesDirectoryName(url);
   const htmlFileName = generateHtmlFileName(url);
   const myUrl = new URL(url);
@@ -54,22 +48,16 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   console.log(url);
   console.log(outputPath);
 
-  return fsp.access(outputPath)
-    .then(() => axios.get(url))
+  return axios.get(url)
+  //fsp.access(outputPath)
+    // .then(() => axios.get(url))
+    // axios.get(url)
     .then(({ data }) => {
-      // console.log(status);
-      // console.log(data)
       initHtml = data;
       return cheerio.load(data);
     })
     .then(($) => {
       const canonicalElement = $('head').find('link[rel="canonical"]');
-      // console.log(canonicalElement.length);
-      // const $xml = cheerio.load(initHtml, { xml: true });
-      // const canonicalElementXml = $xml('head').find('link[rel="canonical"]');
-      // const canonicalElement = $('head').find('link[rel="canonical"]');
-      // console.log(canonicalElementXml.length);
-      // console.log(canonicalElement.length);
 
       if (canonicalElement.length > 0) {
         canonicalPresent = true;

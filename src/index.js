@@ -1,5 +1,5 @@
 import path from 'path';
-import { accessSync, constants, promises as fsp } from 'fs';
+import { promises as fsp } from 'fs';
 // import { constants, promises as fsp } from 'fs';
 import axios from 'axios';
 import cheerio from 'cheerio';
@@ -8,24 +8,14 @@ import {
   generateResourceFilesDirectoryName,
   generateHtmlFileName,
   isValidUrl,
-  // getResourceFileName,
-  // downLoadResource,
   createResourceDirectory, editResourcePathesInHtml, downloadResources,
 } from './utils.js';
 
 const defaultDirectory = process.cwd();
 
 const pageLoader = (url, outputPath = defaultDirectory) => {
-  // console.log('for url');
-  // console.log(url);
   if (!isValidUrl(url)) {
-    // throw new Error('invalid url');
     return Promise.reject(new Error('invalid url'));
-      // .catch((er) => {
-      //   console.log('invalid URL');
-      //   throw er;
-      // });
-    // process.exit();
   }
 
   const resourceFilesDirectoryName = generateResourceFilesDirectoryName(url);
@@ -80,7 +70,6 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     .then(($) => fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`))
     .then(() => createResourceDirectory(outputPath, resourceFilesDirectoryPath))
     .then(() => {
-      // console.log(canonicalPresent);
       if (canonicalPresent) {
         return fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
       }
@@ -98,11 +87,6 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       const listr = new Listr(tasks, { concurrent: true });
       return listr.run();
     });
-    // .catch((er) => {
-      
-    //   console.log('function catch');
-    //   throw er;
-    // });
 };
 
 export default pageLoader;

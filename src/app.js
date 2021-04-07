@@ -13,7 +13,7 @@ const runApp = () => {
   // console.log(pageLoader('https://hexlet.io/', testPath));
   commander.version('0.0.1')
     .description('Some description')
-    .option('-o, --output [path]', 'Download path', defaultPath)
+    .option('-out, --output [path]', 'Download path', defaultPath)
     .arguments('<url>')
     .action((url) => pageLoader(url, commander.output)
       .catch((er) => {

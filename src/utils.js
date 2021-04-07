@@ -6,12 +6,12 @@ import isURL from 'validator/lib/isURL.js';
 const formatUrl = (url) => url.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-');
 
 export const isValidUrl = (url) => {
-  try {
-    return new URL(url, url) && true;
-  } catch {
-    return false;
-  }
-  // return isURL(url);
+  // try {
+  //   return new URL(url, url) && true;
+  // } catch {
+  //   return false;
+  // }
+  return isURL(url);
 };
 
 export const generateResourceFilesDirectoryName = (urlString) => {
@@ -74,8 +74,8 @@ export const editResourcePathesInHtml = (selector, type, directoryPath, $, myUrl
 
   links.each(function () {
     const link = $(this).attr(attribute);
-    console.log(link);
-    console.log(isValidUrl(link));
+    // console.log(link);
+    // console.log(isValidUrl(link));
     if (link && (!isValidUrl(link) || ((new URL(link)).origin === base))) {
       const { href } = new URL(link, base);
       originalUrls[type].push(href);

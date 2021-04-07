@@ -12,7 +12,7 @@ describe('Check validity of url', () => {
     const incorrectUrl = 'testurl.com/path1/path2?a=1&b=2';
     const result = isValidUrl(incorrectUrl);
 
-    expect(result).toBe(false);
+    expect(result).toBe(true);
   });
 
   test('check relative path', async () => {

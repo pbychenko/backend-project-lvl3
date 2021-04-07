@@ -1,5 +1,5 @@
 import path from 'path';
-import { promises as fsp } from 'fs';
+import { accessSync, promises as fsp } from 'fs';
 // import { constants, promises as fsp } from 'fs';
 import axios from 'axios';
 import cheerio from 'cheerio';
@@ -14,8 +14,18 @@ import {
 const defaultDirectory = process.cwd();
 
 const pageLoader = (url, outputPath = defaultDirectory) => {
+  console.log(url);
+  console.log(outputPath);
+
   if (!isValidUrl(url)) {
     return Promise.reject(new Error('invalid url'));
+  }
+
+  try {
+    accessSync(outputPath);
+    console.log('can read/write');
+  } catch (err) {
+    return Promise.reject(new Error('err'));
   }
 
   const resourceFilesDirectoryName = generateResourceFilesDirectoryName(url);
@@ -34,9 +44,6 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   };
   let initHtml;
   let canonicalPresent = false;
-
-  console.log(url);
-  console.log(outputPath);
 
   return axios.get(url)
   //fsp.access(outputPath)
@@ -88,7 +95,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       return listr.run();
     })
     .catch((er) => {
-      // console.log('in func')
+      console.log('in func');
       throw er;
     });
 };

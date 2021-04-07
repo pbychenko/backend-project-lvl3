@@ -51,6 +51,9 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   let initHtml;
   let canonicalPresent = false;
 
+  console.log(url);
+  console.log(outputPath);
+
   return axios.get(url)
     .then(({ data, status }) => {
       console.log('in');
@@ -108,6 +111,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       return listr.run();
     })
     .catch((er) => {
+      
       console.log('function catch');
       throw er;
     });

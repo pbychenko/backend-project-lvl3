@@ -54,9 +54,9 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   console.log(url);
   console.log(outputPath);
 
-  return axios.get(url)
-    .then(({ data, status }) => {
-      console.log('in');
+  return fsp.access(outputPath)
+    .then(() => axios.get(url))
+    .then(({ data }) => {
       // console.log(status);
       // console.log(data)
       initHtml = data;

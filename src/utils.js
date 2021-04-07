@@ -53,11 +53,11 @@ export const downLoadResource = (resourcePath, downLoadPath) => {
 };
 
 export const createResourceDirectory = (outputPath, resourceFilesDirectoryPath) => (
-  fsp.access(outputPath)
-  .then(() => fsp.mkdir(resourceFilesDirectoryPath))
-  // fsp.mkdir(resourceFilesDirectoryPath)
+  // fsp.access(outputPath)
+  // .then(() => fsp.mkdir(resourceFilesDirectoryPath))
+  fsp.mkdir(resourceFilesDirectoryPath)
     .catch((er) => {
-      // console.error(er.message);
+      console.error('ss');
       throw er;
       // throw new Error('Directory ca');
       // process.exit(er.errno);

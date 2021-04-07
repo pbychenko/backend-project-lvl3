@@ -21,12 +21,12 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     return Promise.reject(new Error('invalid url'));
   }
 
-  try {
-    accessSync(outputPath);
-    console.log('can read/write');
-  } catch (err) {
-    return Promise.reject(new Error('err'));
-  }
+  // try {
+  //   accessSync(outputPath);
+  //   console.log('can read/write');
+  // } catch (err) {
+  //   return Promise.reject(new Error('err'));
+  // }
 
   const resourceFilesDirectoryName = generateResourceFilesDirectoryName(url);
   const htmlFileName = generateHtmlFileName(url);

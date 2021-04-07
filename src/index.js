@@ -86,6 +86,10 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
         }));
       const listr = new Listr(tasks, { concurrent: true });
       return listr.run();
+    })
+    .catch((er) => {
+      // console.log('in func')
+      throw er;
     });
 };
 

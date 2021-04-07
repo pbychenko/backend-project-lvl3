@@ -1,5 +1,5 @@
 import path from 'path';
-import { accessSync, promises as fsp } from 'fs';
+import { promises as fsp } from 'fs';
 // import { constants, promises as fsp } from 'fs';
 import axios from 'axios';
 import cheerio from 'cheerio';
@@ -46,9 +46,6 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
   let canonicalPresent = false;
 
   return axios.get(url)
-  //fsp.access(outputPath)
-    // .then(() => axios.get(url))
-    // axios.get(url)
     .then(({ data }) => {
       initHtml = data;
       return cheerio.load(data);

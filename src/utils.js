@@ -6,11 +6,6 @@ import isURL from 'validator/lib/isURL.js';
 const formatUrl = (url) => url.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-');
 
 export const isValidUrl = (url) => {
-  // try {
-  //   return new URL(url, url) && true;
-  // } catch {
-  //   return false;
-  // }
   if (url.includes('localhost')) {
     return true;
   }
@@ -30,9 +25,9 @@ export const generateHtmlFileName = (urlString) => {
 export const generateResourceFileName = (urlString) => {
   const tempPath = urlString.split('://')[1];
   const { dir, name, ext } = path.parse(tempPath);
-  // console.log(name);
   const formattedPath = `${dir}/${name}`;
   const newPath = `${formattedPath.replace(/[^a-zA-ZА-Яа-я0-9]/g, '-')}${ext}`;
+
   return newPath;
 };
 

@@ -61,15 +61,15 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
           canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
         }
       }
-      const t = cheerio.load($.html());
+      // const t = cheerio.load($.html());
 
       Object.entries(resourceTypeSelectorMap).forEach(([type, selector]) => {
         editResourcePathesInHtml(
-          selector, type, resourceFilesDirectoryPath, t, myUrl, originalResourcesUrls,
+          selector, type, resourceFilesDirectoryPath, $, myUrl, originalResourcesUrls,
         );
       });
 
-      return t;
+      return $;
     })
     .then(($) => fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`))
     .then(() => createResourceDirectory(outputPath, resourceFilesDirectoryPath))
@@ -90,11 +90,11 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
         }));
       const listr = new Listr(tasks, { concurrent: true });
       return listr.run();
-    })
-    .catch((er) => {
-      console.log('in func');
-      throw er;
     });
+    // .catch((er) => {
+    //   console.log('in func');
+    //   throw er;
+    // });
 };
 
 export default pageLoader;

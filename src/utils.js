@@ -59,14 +59,23 @@ export const createResourceDirectory = (outputPath, resourceFilesDirectoryPath) 
   // })
 );
 
+export const editCanonicalPathInHtml = ($, resourceFilesDirectoryName, htmlFileName) => {
+  const canonicalElement = $('head').find('link[rel="canonical"]');
+  const link = canonicalElement.attr('href');
+
+  if (link) {
+    canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
+  }
+};
+
 export const editResourcePathesInHtml = (selector, type, directoryPath, $, myUrl, originalUrls) => {
   const map = {
-    images: ['src'],
-    styles: ['href'],
-    scripts: ['src'],
+    images: 'src',
+    styles: 'href',
+    scripts: 'src',
   };
 
-  const [attribute] = map[type];
+  const attribute = map[type];
   const base = myUrl.origin;
   const links = $(selector);
 

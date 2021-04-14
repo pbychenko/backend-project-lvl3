@@ -7,7 +7,7 @@ import {
   generateResourceFilesDirectoryName,
   generateHtmlFileName,
   isValidUrl,
-  createResourceDirectory, editResourcePathesInHtml, downloadResources,
+  createResourceDirectory, editResourcePathesInHtml, downloadResources, editCanonicalPathInHtml,
 } from './utils.js';
 
 const defaultDirectory = process.cwd();
@@ -35,7 +35,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     scripts: [],
   };
   let initHtml;
-  let canonicalPresent = false;
+  let canonicalPresent;
 
   return axios.get(url)
     .then(({ data }) => {
@@ -43,15 +43,9 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       return cheerio.load(data);
     })
     .then(($) => {
-      const canonicalElement = $('head').find('link[rel="canonical"]');
-
-      if (canonicalElement.length > 0) {
-        canonicalPresent = true;
-        const link = canonicalElement.attr('href');
-
-        if (link) {
-          canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
-        }
+      canonicalPresent = $('link[rel="canonical"]').length > 0;
+      if (canonicalPresent) {
+        editCanonicalPathInHtml($, resourceFilesDirectoryName, htmlFileName);
       }
 
       Object.entries(resourceTypeSelectorMap).forEach(([type, selector]) => {
@@ -60,9 +54,9 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
         );
       });
 
-      return $;
+      return $.html();
     })
-    .then(($) => fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`))
+    .then((html) => fsp.writeFile(`${outputPath}/${htmlFileName}`, `${html}`))
     .then(() => createResourceDirectory(outputPath, resourceFilesDirectoryPath))
     .then(() => {
       if (canonicalPresent) {

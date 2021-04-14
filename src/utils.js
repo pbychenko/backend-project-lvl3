@@ -1,6 +1,6 @@
 import path from 'path';
 import axios from 'axios';
-import fs, { promises as fsp } from 'fs';
+import fs from 'fs';
 import isURL from 'validator/lib/isURL.js';
 
 const formatUrl = (url) => url.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-');
@@ -46,18 +46,6 @@ export const downLoadResource = (resourcePath, downLoadPath) => {
       // process.exit(er.errno);
     });
 };
-
-export const createResourceDirectory = (outputPath, resourceFilesDirectoryPath) => (
-  // fsp.access(outputPath)
-  // .then(() => fsp.mkdir(resourceFilesDirectoryPath))
-  fsp.mkdir(resourceFilesDirectoryPath)
-  // .catch((er) => {
-  //   console.error('ss');
-  //   throw er;
-  //   // throw new Error('Directory ca');
-  //   // process.exit(er.errno);
-  // })
-);
 
 export const editCanonicalPathInHtml = ($, resourceFilesDirectoryName, htmlFileName) => {
   const canonicalElement = $('head').find('link[rel="canonical"]');

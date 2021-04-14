@@ -6,8 +6,7 @@ import Listr from 'listr';
 import {
   generateResourceFilesDirectoryName,
   generateHtmlFileName,
-  isValidUrl,
-  createResourceDirectory, editResourcePathesInHtml, downloadResources, editCanonicalPathInHtml,
+  isValidUrl, editResourcePathesInHtml, downloadResources, editCanonicalPathInHtml,
 } from './utils.js';
 
 const defaultDirectory = process.cwd();
@@ -57,7 +56,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       return $.html();
     })
     .then((html) => fsp.writeFile(`${outputPath}/${htmlFileName}`, `${html}`))
-    .then(() => createResourceDirectory(outputPath, resourceFilesDirectoryPath))
+    .then(() => fsp.mkdir(resourceFilesDirectoryPath))
     .then(() => {
       if (canonicalPresent) {
         return fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);

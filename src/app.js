@@ -9,8 +9,9 @@ const defaultPath = process.cwd();
 const runApp = () => {
   // const testPath = '/home/pavel/projects/tet';
   // const testPath = '/sys';
-  // console.log(pageLoader('http://wwwperumovclub/books/11', testPath));
-  // console.log(pageLoader('https://hexlet.io/', testPath));
+  // console.log(pageLoader('http://www.perumov.club/books/11', testPath));
+  // console.log(pageLoader('https://www.olx.kz/', testPath));
+  // console.log(pageLoader('https://hexlet.io', testPath));
   commander.version('0.0.1')
     .description('Some description')
     .option('-o, --output [path]', 'Download path', defaultPath)

@@ -1,36 +1,23 @@
-import path from 'path';
-import { promises as fsp } from 'fs';
-// import { constants, promises as fsp } from 'fs';
 import axios from 'axios';
 import cheerio from 'cheerio';
+import path from 'path';
+import { promises as fsp } from 'fs';
 import Listr from 'listr';
 import {
   generateResourceFilesDirectoryName,
   generateHtmlFileName,
-  isValidUrl,
-  createResourceDirectory, editResourcePathesInHtml, downloadResources,
+  isValidUrl, editResourcePathesInHtml, downloadResources, editCanonicalPathInHtml,
 } from './utils.js';
 
 const defaultDirectory = process.cwd();
 
 const pageLoader = (url, outputPath = defaultDirectory) => {
-  console.log(url);
-  console.log(outputPath);
-
   if (!isValidUrl(url)) {
-    return Promise.reject(new Error('invalid url'));
+    return Promise.reject(new Error('Invalid url. Please check'));
   }
-
-  // try {
-  //   accessSync(outputPath);
-  //   console.log('can read/write');
-  // } catch (err) {
-  //   return Promise.reject(new Error('err'));
-  // }
 
   const resourceFilesDirectoryName = generateResourceFilesDirectoryName(url);
   const htmlFileName = generateHtmlFileName(url);
-  const myUrl = new URL(url);
   const resourceFilesDirectoryPath = path.join(outputPath, resourceFilesDirectoryName);
   const resourceTypeSelectorMap = {
     images: 'img',
@@ -43,7 +30,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
     scripts: [],
   };
   let initHtml;
-  let canonicalPresent = false;
+  let canonicalPresent;
 
   return axios.get(url)
     .then(({ data }) => {
@@ -51,49 +38,36 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
       return cheerio.load(data);
     })
     .then(($) => {
-      const canonicalElement = $('head').find('link[rel="canonical"]');
-
-      if (canonicalElement.length > 0) {
-        canonicalPresent = true;
-        const link = canonicalElement.attr('href');
-
-        if (link) {
-          canonicalElement.attr('href', `${resourceFilesDirectoryName}/${htmlFileName}`);
-        }
+      canonicalPresent = $('link[rel="canonical"]').length > 0;
+      if (canonicalPresent) {
+        editCanonicalPathInHtml($, resourceFilesDirectoryName, htmlFileName);
       }
-      const t = cheerio.load($.html());
 
       Object.entries(resourceTypeSelectorMap).forEach(([type, selector]) => {
         editResourcePathesInHtml(
-          selector, type, resourceFilesDirectoryPath, t, myUrl, originalResourcesUrls,
+          selector, type, resourceFilesDirectoryName, $, url, originalResourcesUrls,
         );
       });
 
-      return t;
+      return $.html();
     })
-    .then(($) => fsp.writeFile(`${outputPath}/${htmlFileName}`, `${$.html()}`))
-    .then(() => createResourceDirectory(outputPath, resourceFilesDirectoryPath))
-    .then(() => {
-      if (canonicalPresent) {
-        return fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
-      }
-
-      return null;
-    })
+    .then((html) => fsp.writeFile(path.join(outputPath, htmlFileName), html))
+    .then(() => fsp.mkdir(resourceFilesDirectoryPath))
+    .then(() => (
+      canonicalPresent ? fsp.writeFile(
+        path.join(resourceFilesDirectoryPath, htmlFileName),
+        initHtml,
+      ) : null))
     .then(() => {
       const tasks = Object.keys(resourceTypeSelectorMap).map((type) => (
         {
           title: `Downloading ${type}`,
           task: () => (
-            downloadResources(originalResourcesUrls[type], resourceFilesDirectoryPath, myUrl)
+            downloadResources(originalResourcesUrls[type], resourceFilesDirectoryPath)
           ),
         }));
       const listr = new Listr(tasks, { concurrent: true });
       return listr.run();
-    })
-    .catch((er) => {
-      console.log('in func');
-      throw er;
     });
 };
 

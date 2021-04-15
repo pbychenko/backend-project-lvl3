@@ -67,7 +67,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
         {
           title: `Downloading ${type}`,
           task: () => (
-            downloadResources(originalResourcesUrls[type], resourceFilesDirectoryPath, myUrl)
+            downloadResources(originalResourcesUrls[type], resourceFilesDirectoryPath)
           ),
         }));
       const listr = new Listr(tasks, { concurrent: true });

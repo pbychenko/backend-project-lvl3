@@ -31,22 +31,6 @@ export const generateResourceFileName = (urlString) => {
   return newPath;
 };
 
-export const downLoadResource = (resourcePath, downLoadPath) => {
-  const writer = fs.createWriteStream(downLoadPath);
-
-  return axios({
-    method: 'get',
-    url: resourcePath,
-    responseType: 'stream',
-  })
-    .then((response) => response.data.pipe(writer))
-    .catch((er) => {
-      console.error('file cant be downloaded');
-      throw er;
-      // process.exit(er.errno);
-    });
-};
-
 export const editCanonicalPathInHtml = ($, resourceFilesDirectoryName, htmlFileName) => {
   const canonicalElement = $('head').find('link[rel="canonical"]');
   const link = canonicalElement.attr('href');
@@ -79,21 +63,22 @@ export const editResourcePathesInHtml = (selector, type, directoryName, $, url, 
   });
 };
 
-export const downloadResources = (links, resourceFilesDirectoryPath, myUrl) => {
-  const base = myUrl.origin;
+export const downLoadResource = (resourcePath, downLoadPath) => {
+  const writer = fs.createWriteStream(downLoadPath);
+
+  return axios({
+    method: 'get',
+    url: resourcePath,
+    responseType: 'stream',
+  }).then((response) => response.data.pipe(writer));
+};
+
+export const downloadResources = (links, resourceFilesDirectoryPath) => {
+  // const urlOrigin = (new URL(url)).origin;
   const promises = links.map((link) => {
-    if (link) {
-      if (!isValidUrl(link) || ((new URL(link)).origin === base)) {
-        const { href } = new URL(link, base);
-        const fullResourceName = generateResourceFileName(href);
-        return downLoadResource(href, path.resolve(resourceFilesDirectoryPath, fullResourceName))
-          .catch((er) => {
-            // console.log(er.message)
-            throw er;
-          });
-      }
-    }
-    return null;
+    // const { href } = new URL(link, urlOrigin);
+    const fullResourceName = generateResourceFileName(link);
+    return downLoadResource(link, path.join(resourceFilesDirectoryPath, fullResourceName));
   });
 
   const promise = Promise.all(promises);

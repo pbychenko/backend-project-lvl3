@@ -56,7 +56,7 @@ export const editCanonicalPathInHtml = ($, resourceFilesDirectoryName, htmlFileN
   }
 };
 
-export const editResourcePathesInHtml = (selector, type, directoryPath, $, myUrl, originalUrls) => {
+export const editResourcePathesInHtml = (selector, type, directoryName, $, url, resourceUrls) => {
   const map = {
     images: 'src',
     styles: 'href',
@@ -64,21 +64,17 @@ export const editResourcePathesInHtml = (selector, type, directoryPath, $, myUrl
   };
 
   const attribute = map[type];
-  const base = myUrl.origin;
+  const urlOrigin = (new URL(url)).origin;
   const links = $(selector);
 
   links.each(function () {
     const link = $(this).attr(attribute);
-    // console.log(link);
-    // console.log(isValidUrl(link));
-    if (link && (!isValidUrl(link) || ((new URL(link)).origin === base))) {
-      const { href } = new URL(link, base);
-      originalUrls[type].push(href);
+    if (link && (!isValidUrl(link) || ((new URL(link)).origin === urlOrigin))) {
+      const { href } = new URL(link, urlOrigin);
       const fullResourceName = generateResourceFileName(href);
-      // console.log(fullResourceName);
-      const { name } = path.parse(directoryPath);
 
-      $(this).attr(attribute, `${name}/${fullResourceName}`);
+      resourceUrls[type].push(href);
+      $(this).attr(attribute, path.join(directoryName, fullResourceName));
     }
   });
 };

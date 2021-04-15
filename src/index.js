@@ -1,7 +1,7 @@
-import path from 'path';
-import { promises as fsp } from 'fs';
 import axios from 'axios';
 import cheerio from 'cheerio';
+import path from 'path';
+import { promises as fsp } from 'fs';
 import Listr from 'listr';
 import {
   generateResourceFilesDirectoryName,
@@ -21,7 +21,6 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
 
   const resourceFilesDirectoryName = generateResourceFilesDirectoryName(url);
   const htmlFileName = generateHtmlFileName(url);
-  const myUrl = new URL(url);
   const resourceFilesDirectoryPath = path.join(outputPath, resourceFilesDirectoryName);
   const resourceTypeSelectorMap = {
     images: 'img',

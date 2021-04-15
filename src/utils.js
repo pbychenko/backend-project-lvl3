@@ -1,6 +1,6 @@
-import path from 'path';
 import axios from 'axios';
 import fs from 'fs';
+import path from 'path';
 import isURL from 'validator/lib/isURL.js';
 
 const formatUrl = (url) => url.split('://')[1].replace(/[^a-zA-ZА-Яа-я0-9]/g, '-');
@@ -51,6 +51,7 @@ export const editResourcePathesInHtml = (selector, type, directoryName, $, url, 
   const urlOrigin = (new URL(url)).origin;
   const links = $(selector);
 
+  // eslint-disable-next-line func-names
   links.each(function () {
     const link = $(this).attr(attribute);
     if (link && (!isValidUrl(link) || ((new URL(link)).origin === urlOrigin))) {
@@ -74,9 +75,7 @@ export const downLoadResource = (resourcePath, downLoadPath) => {
 };
 
 export const downloadResources = (links, resourceFilesDirectoryPath) => {
-  // const urlOrigin = (new URL(url)).origin;
   const promises = links.map((link) => {
-    // const { href } = new URL(link, urlOrigin);
     const fullResourceName = generateResourceFileName(link);
     return downLoadResource(link, path.join(resourceFilesDirectoryPath, fullResourceName));
   });

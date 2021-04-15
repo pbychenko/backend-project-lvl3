@@ -49,7 +49,7 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
 
       Object.entries(resourceTypeSelectorMap).forEach(([type, selector]) => {
         editResourcePathesInHtml(
-          selector, type, resourceFilesDirectoryPath, $, url, originalResourcesUrls,
+          selector, type, resourceFilesDirectoryName, $, url, originalResourcesUrls,
         );
       });
 

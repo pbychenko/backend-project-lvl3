@@ -12,9 +12,6 @@ import {
 const defaultDirectory = process.cwd();
 
 const pageLoader = (url, outputPath = defaultDirectory) => {
-  console.log(url);
-  console.log(outputPath);
-
   if (!isValidUrl(url)) {
     return Promise.reject(new Error('Invalid url. Please check'));
   }

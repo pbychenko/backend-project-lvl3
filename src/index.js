@@ -55,15 +55,13 @@ const pageLoader = (url, outputPath = defaultDirectory) => {
 
       return $.html();
     })
-    .then((html) => fsp.writeFile(`${outputPath}/${htmlFileName}`, `${html}`))
+    .then((html) => fsp.writeFile(path.join(outputPath, htmlFileName), html))
     .then(() => fsp.mkdir(resourceFilesDirectoryPath))
-    .then(() => {
-      if (canonicalPresent) {
-        return fsp.writeFile(`${outputPath}/${resourceFilesDirectoryName}/${htmlFileName}`, `${initHtml}`);
-      }
-
-      return null;
-    })
+    .then(() => (
+      canonicalPresent ? fsp.writeFile(
+        path.join(resourceFilesDirectoryPath, htmlFileName),
+        initHtml,
+      ) : null))
     .then(() => {
       const tasks = Object.keys(resourceTypeSelectorMap).map((type) => (
         {
